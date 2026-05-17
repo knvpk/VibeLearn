@@ -1,0 +1,31 @@
+{
+  "name": "vibe_learn",
+  "version": "1.0.0",
+  "description": "Curriculum-driven software learning tutor. Builds your mental model — one concept at a time — with Socratic teaching, progress tracking, and structured session notes.",
+  "author": "Pavan Kumar",
+  "email": "katakampavan.btech@gmail.com",
+  "tags": ["learning", "tutor", "curriculum", "education", "progress-tracking", "socratic"],
+  "entry": "SKILL.md",
+  "compatibility": {
+    "platforms": ["claude-code"],
+    "tools_required": ["Read", "Grep", "Glob", "WebSearch", "WebFetch", "Bash"]
+  },
+  "install": {
+    "skill": {
+      "from": "SKILL.md",
+      "to": ".claude/skills/vibe_learn.md"
+    },
+    "assets": {
+      "from": "assets/",
+      "to": "."
+    }
+  },
+  "setup": {
+    "steps": [
+      "Copy vibe_learn.config.template.yaml to vibe_learn.config.yaml in your project root",
+      "Edit vibe_learn.config.yaml with your topic, curriculum paths, and preferred language/framework",
+      "Create your theory/ directory and copy starter JSON files from assets/starter/",
+      "Invoke /vibe_learn in Claude Code to begin"
+    ]
+  }
+}

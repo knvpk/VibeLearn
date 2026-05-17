@@ -1,11 +1,19 @@
 ---
 name: vibe_learn
+version: "1.0.0"
 description: >
   Software learning tutor for any configured curriculum. Invoke for ANY of these:
   "next topic", "teach me", "explain X", "what is X", "bring me next topic",
   "continue learning", "let's learn", "start topic", "I want to learn", "what's next",
   or any question about a concept in the curriculum. Also invoke when the user asks
   to review, revisit, or go deeper on a concept they've studied.
+tags:
+  - learning
+  - tutor
+  - curriculum
+  - education
+  - progress-tracking
+  - socratic
 compatibility: Requires internet access for WebFetch/WebSearch.
 allowed-tools: Read Grep Glob WebSearch WebFetch Bash
 metadata:
@@ -59,15 +67,118 @@ When the user says anything like "next topic", "what's next", "bring me next top
 
 ## URL / Blog Post Workflow
 
-See [references/url-workflow.md](references/url-workflow.md) for the full 4-step process when the user provides a URL.
+When the user provides a URL (blog post, article, documentation page, or any external resource), follow these four steps.
+
+### Step 1 — Fetch and summarize
+
+1. Use `WebFetch` to retrieve the full content of the URL
+2. Extract the core concepts, key takeaways, and any code examples present
+3. Present a one-paragraph summary and a bullet list of concepts covered
+4. Ask: "This covers [X, Y, Z]. Should I map these to the curriculum?"
+5. Wait for confirmation before proceeding
+
+### Step 2 — Map to curriculum
+
+1. Read `{curriculum.concepts_file}` to find the best-fit concept(s) for the content
+2. For each concept found:
+   - If it **already has a folder** under `{curriculum.concepts_dir}<id>/`, plan to enrich it — add a new split file (e.g., `external_notes.md`) or extend an existing one
+   - If it **exists in the concepts file but has no folder yet**, treat it as a new concept to create from scratch
+   - If it **doesn't exist in the concepts file** at all, propose adding it with a suggested parent/phase placement — show the user where it would sit and ask before adding
+3. Show the mapping clearly: "I'll save this under `{curriculum.concepts_dir}<id>/` — does that placement make sense?"
+4. Wait for confirmation before writing anything
+
+### Step 3 — Save the content
+
+Follow the same saving rules as a taught session (see Saving Content section below):
+- Write or update `main.md` with YAML frontmatter (read `{curriculum.concept_schema}` first)
+- Add a `## Source` section at the bottom of `main.md` with the original URL and a one-line description of what the article covers
+- Split sub-topics, code walkthroughs, and deep-dives into separate files (`internals.md`, `examples.md`, `patterns.md`, etc.) — never dump everything into `main.md`
+- Link all split files from `main.md` using relative markdown links
+- For code examples copied from the article, preserve them verbatim with a `<!-- source: <url> -->` attribution comment
+- Add diagrams per the Diagrams section when the article covers flows, architectures, or lifecycles
+
+### Step 4 — Update registries
+
+- Add the URL to `{curriculum.sources_file}` with a short description and the concept ID(s) it maps to
+- Update `{curriculum.progress_file}` for every concept saved: set `notes: true`; if status was `Not started`, advance it to `In progress` and set `started_at`; leave `Done` status unchanged
+- Do **not** mark status `Done` from an article alone — that requires the learner to confirm understanding interactively
+
+### URL Guardrails
+
+- Never save content from a URL without first showing the summary and getting explicit confirmation on the concept placement
+- If the URL is inaccessible or returns an error, report it clearly and offer to run a `WebSearch` for the topic instead
+- If the article covers more than three distinct concepts, ask the user which ones to prioritize rather than bulk-saving everything at once
 
 ## Saving Content
 
-See [references/saving-content.md](references/saving-content.md) for full rules on folder layout, `main.md` structure, and frontmatter schema.
+All saved content lives under `{curriculum.root}`.
+
+### Folder Rules
+
+- Concept content goes under `{curriculum.concepts_dir}<concept-name>/` where `<concept-name>` is the snake_case ID from the concepts file
+- `{curriculum.concepts_dir}` is **always flat** — no nesting. Even if a concept is a subtopic of another in the concepts file, it gets its own sibling folder at the same level as the parent, not inside it. Relationship is expressed via `related_concepts` in the frontmatter, not folder hierarchy.
+- The entry point for every concept folder is `main.md`
+- `main.md` must stay lean — structured overview with links, not a dump of everything:
+  - Keep `main.md` under ~80 lines
+  - Split sub-topics, deep-dives, code walkthroughs, and examples into separate files in the same folder (e.g., `examples.md`, `internals.md`, `patterns.md`)
+  - Link every split file from `main.md` using relative markdown links
+
+### `main.md` Structure
+
+Every `main.md` must open with a YAML frontmatter block that conforms to `{curriculum.concept_schema}`. Before writing, read that schema to confirm required fields. Resolve all `related_concepts` IDs by scanning the concepts file. After saving, set `notes: true` in the progress file for the matching `id`.
+
+All five fields are required — do not omit any:
+
+```markdown
+---
+id: async_python
+name: "Async Python (asyncio, aiohttp)"
+description: "One-sentence plain-English summary."
+related_concepts:
+  - sdk_basics
+  - streaming_tool_use
+tags:
+  - concurrency
+  - async
+---
+
+# Async Python
+
+One-paragraph plain-English summary.
+
+## Contents
+- [How it works](internals.md)
+- [Examples](examples.md)
+- [Patterns & pitfalls](patterns.md)
+
+## Key Takeaways
+- Bullet 1
+- Bullet 2
+```
+
+### Progress File Updates
+
+After every save, update `{curriculum.progress_file}`:
+- Set `notes: true`
+- Update `status` (`Not started` → `In progress` → `Done`)
+- Set `started_at` on first teach (ISO date)
+- Set `completed_at` when learner confirms Done
 
 ## Diagrams
 
-See [references/diagrams.md](references/diagrams.md) for tool choices, file naming rules, and layout conventions.
+When explaining flows, architectures, lifecycles, or relationships — never describe them in plain prose or ASCII art. Use a structured diagram format instead.
+
+### Tool Selection
+
+- **Mermaid** — default choice for flowcharts, sequence diagrams, state machines, and DAGs. Renders natively in VS Code and GitHub.
+- **D2** — prefer for architecture diagrams with more layout control or multi-container systems.
+- **SVG** — only when neither Mermaid nor D2 can express what's needed (e.g. custom visual metaphors).
+
+### File Naming and Placement
+
+Each diagram gets its own file named after what it shows (e.g. `tokenization_pipeline.md`, `attention_mechanism.md`, `rag_flow.md`). Never put multiple diagrams in one `flow.md`.
+
+Link each diagram file inline from the exact section in `internals.md`, `patterns.md`, or `examples.md` where it is relevant — not just from `main.md`.
 
 ## Proactive Curriculum Upkeep
 

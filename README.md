@@ -16,7 +16,17 @@ The tutor reads your progress before each session, teaches using a Socratic appr
 
 ### 1. Install the skill
 
-Place `SKILL.md` in your project's `.claude/skills/` directory (or wherever Claude Code loads skills from).
+**Via a skill installer (recommended):**
+
+If you're using a tool that reads `skill.json` (e.g. agentskill.sh or a compatible CLI), run its install command pointed at this repo — it will copy `SKILL.md` to `.claude/skills/vibe_learn.md` and the starter assets to your project root automatically.
+
+**Manually:**
+
+Copy `SKILL.md` into your project's `.claude/skills/` directory:
+
+```bash
+cp path/to/vibe_learn/SKILL.md .claude/skills/vibe_learn.md
+```
 
 ### 2. Create your config
 
@@ -337,6 +347,7 @@ At the end of sessions, the tutor may ask:
 
 | File | Purpose |
 |------|---------|
+| `skill.json` | Machine-readable manifest — used by installers and skill marketplaces |
 | `SKILL.md` | Skill definition — do not edit unless customizing tutor behavior |
 | `vibe_learn.config.yaml` | Your config — topic, paths, language, framework, idioms |
 | `theory/concepts.json` | Hierarchical topic map |
