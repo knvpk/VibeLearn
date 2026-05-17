@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "concept_meta.json",
+  "title": "Concept Frontmatter",
+  "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/main.md file",
+  "type": "object",
+  "required": ["id", "name", "description", "related_concepts", "tags"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Snake_case ID matching both the folder name under concepts_dir and the key in concepts.json / progress.json",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable concept name matching the title in concepts.json"
+    },
+    "description": {
+      "type": "string",
+      "description": "One-sentence plain-English summary of what this concept is"
+    },
+    "related_concepts": {
+      "type": "array",
+      "description": "IDs from concepts.json that are closely related — prerequisites, follow-ons, or siblings",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form keywords for cross-cutting themes",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    }
+  }
+}

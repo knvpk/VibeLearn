@@ -1,0 +1,41 @@
+# Tutor configuration — copy this file to your project root as tutor.config.yaml
+# and fill in the values for your topic and preferred layout.
+
+# The subject area — used in introductions and curriculum references
+topic: "<Your Topic Here>"   # e.g. "Agentic AI Engineering", "Systems Programming", "ML Fundamentals"
+
+curriculum:
+  # Root directory for all curriculum files
+  root: theory/
+
+  # Hierarchical map of all concepts, phases, and subtopics
+  concepts_file: theory/concepts.json
+
+  # Phase ordering, durations, and prerequisites
+  plan_file: theory/plan.json
+
+  # Per-concept status, timestamps, and notes tracking
+  progress_file: theory/progress.json
+
+  # Registry of external resources (URLs, articles, docs)
+  sources_file: theory/sources.json
+
+  # Directory where per-concept note folders are saved (flat, no nesting)
+  concepts_dir: theory/concepts/
+
+  # JSON schema the agent reads before writing any concept frontmatter
+  # Point this at a copy of assets/schemas/concept_meta.json in your project
+  concept_schema: .claude/schemas/concept_meta.json
+
+examples:
+  # Language for all code examples
+  language: Python   # e.g. "Python", "TypeScript", "Go", "Rust"
+
+  # Primary framework for the domain — used when the concept relates to it
+  framework: "<Your Framework>"   # e.g. "FastAPI", "React", "LangChain", "PyTorch"
+
+  # Idiomatic patterns to prefer when illustrating framework concepts
+  idioms:
+    - "<Pattern1>"   # e.g. class names, decorators, core primitives your framework uses
+    - "<Pattern2>"
+    - "<Pattern3>"
