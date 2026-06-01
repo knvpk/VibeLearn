@@ -42,6 +42,23 @@ wiki:
   tool_schema: schemas/tool_meta.json
   workflow_schema: schemas/workflow_meta.json
 
+audience:
+  # Who this content is written for — shapes explanation depth and assumed knowledge
+  role: "<Your Audience Role>"   # e.g. "software engineer", "data scientist", "student", "product manager"
+
+  # Experience level — controls jargon density, analogy style, and example complexity
+  level: "<Level>"   # "beginner" | "intermediate" | "advanced" | "expert"
+
+  # Domain knowledge the audience already has — LLM won't re-explain these
+  prior_knowledge:
+    - "<Domain1>"   # e.g. "Python basics", "REST APIs", "linear algebra"
+    - "<Domain2>"
+
+  # Goals the audience is trying to accomplish — keeps explanations outcome-oriented
+  goals:
+    - "<Goal1>"   # e.g. "build production RAG pipelines", "pass a certification exam"
+    - "<Goal2>"
+
 examples:
   # Language for all code examples
   language: Python   # e.g. "Python", "TypeScript", "Go", "Rust"
