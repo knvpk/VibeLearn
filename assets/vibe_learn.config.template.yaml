@@ -4,28 +4,38 @@
 # The subject area — used in introductions and curriculum references
 topic: "<Your Topic Here>"   # e.g. "Agentic AI Engineering", "Systems Programming", "ML Fundamentals"
 
-curriculum:
-  # Root directory for all curriculum files
-  root: theory/
+wiki:
+  # Root directory for all wiki files
+  root: wiki/
 
-  # Hierarchical map of all concepts, phases, and subtopics
-  concepts_file: theory/concepts.json
+  # Concept map — phases and topics listed with [[wikilinks]], organized by phase.
+  # The LLM reads this to determine concept order and check what exists before teaching or ingesting.
+  index_file: wiki/index.md
 
   # Phase ordering, durations, and prerequisites
-  plan_file: theory/plan.json
+  plan_file: wiki/_plan.md
 
-  # Per-concept status, timestamps, and notes tracking
-  progress_file: theory/progress.json
+  # Append-only log of all ingest, query, and lint operations
+  log_file: wiki/log.md
 
-  # Registry of external resources (URLs, articles, docs)
-  sources_file: theory/sources.json
+  # Per-concept folders (flat — never nested, even for subtopics)
+  concepts_dir: wiki/concepts/
 
-  # Directory where per-concept note folders are saved (flat, no nesting)
-  concepts_dir: theory/concepts/
+  # Source nodes — one .md per article, paper, video, or docs page
+  sources_dir: wiki/sources/
 
-  # JSON schema the agent reads before writing any concept frontmatter
-  # Point this at a copy of assets/schemas/concept_meta.json in your project
-  concept_schema: .claude/schemas/concept_meta.json
+  # Author nodes — one .md per person
+  authors_dir: wiki/authors/
+
+  # Tool nodes — one .md per tool, library, framework, or service
+  tools_dir: wiki/tools/
+
+  # Schemas — the LLM reads these before writing any frontmatter
+  # Point these at copies of assets/schemas/ placed in your project
+  concept_schema: schemas/concept_meta.json
+  source_schema: schemas/source_meta.json
+  author_schema: schemas/author_meta.json
+  tool_schema: schemas/tool_meta.json
 
 examples:
   # Language for all code examples

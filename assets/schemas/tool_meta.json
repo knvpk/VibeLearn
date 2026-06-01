@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tool_meta.json",
+  "title": "Tool Frontmatter",
+  "description": "Schema for the YAML frontmatter in every <tools_dir>/<id>.md file",
+  "type": "object",
+  "required": ["id", "name", "category"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Snake_case ID used as the filename and in [[wikilinks]]",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the tool, library, or framework"
+    },
+    "category": {
+      "type": "string",
+      "description": "Kind of tool",
+      "enum": ["framework", "library", "service", "cli", "database", "other"]
+    },
+    "url": {
+      "description": "Official homepage or docs URL",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "description": {
+      "description": "One-to-two sentence description of what the tool does",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "concepts": {
+      "type": "array",
+      "description": "[[wikilink]] references to curriculum concepts this tool relates to",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "verdict": {
+      "description": "User's recommendation — only set from explicit user opinion, never inferred",
+      "oneOf": [
+        { "type": "string", "enum": ["recommended", "neutral", "avoid"] },
+        { "type": "null" }
+      ]
+    },
+    "pros": {
+      "type": "array",
+      "description": "Advantages noted by the user",
+      "items": { "type": "string" }
+    },
+    "cons": {
+      "type": "array",
+      "description": "Drawbacks noted by the user",
+      "items": { "type": "string" }
+    },
+    "notes": {
+      "description": "Free-form opinion recorded verbatim from the user",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    }
+  }
+}

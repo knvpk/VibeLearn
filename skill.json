@@ -1,10 +1,10 @@
 {
   "name": "vibe_learn",
-  "version": "1.0.0",
-  "description": "Curriculum-driven software learning tutor. Builds your mental model — one concept at a time — with Socratic teaching, progress tracking, and structured session notes.",
+  "version": "2.0.0",
+  "description": "Personal knowledge tutor and wiki maintainer. Teaches concepts Socratically, ingests external sources into a compounding Obsidian-compatible wiki, and health-checks the knowledge graph via lint. No duplicate concepts — only enrichment.",
   "author": "Pavan Kumar",
   "email": "katakampavan.btech@gmail.com",
-  "tags": ["learning", "tutor", "curriculum", "education", "progress-tracking", "socratic"],
+  "tags": ["learning", "tutor", "wiki", "knowledge-base", "obsidian", "socratic", "compounding"],
   "entry": "SKILL.md",
   "compatibility": {
     "platforms": ["claude-code"],
@@ -23,8 +23,11 @@
   "setup": {
     "steps": [
       "Copy vibe_learn.config.template.yaml to vibe_learn.config.yaml in your project root",
-      "Edit vibe_learn.config.yaml with your topic, curriculum paths, and preferred language/framework",
-      "Create your theory/ directory and copy starter JSON files from assets/starter/",
+      "Edit vibe_learn.config.yaml with your topic, preferred language/framework, and wiki paths",
+      "Create your wiki/ directory structure: wiki/concepts/, wiki/sources/, wiki/authors/, wiki/tools/",
+      "Copy assets/starter/index.md → wiki/index.md, assets/starter/_plan.md → wiki/_plan.md, assets/starter/log.md → wiki/log.md",
+      "Copy assets/schemas/*.json → schemas/ in your project root",
+      "Open wiki/ as an Obsidian vault to browse the knowledge graph as it grows",
       "Invoke /vibe_learn in Claude Code to begin"
     ]
   }

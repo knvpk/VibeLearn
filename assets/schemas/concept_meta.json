@@ -2,19 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "concept_meta.json",
   "title": "Concept Frontmatter",
-  "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/main.md file",
+  "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/main.md file. Progress tracking lives here — there is no separate progress file.",
   "type": "object",
-  "required": ["id", "name", "description", "related_concepts", "tags"],
+  "required": ["id", "name", "description", "related_concepts", "tags", "status", "started_at", "completed_at", "notes", "sources"],
   "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
-      "description": "Snake_case ID matching both the folder name under concepts_dir and the key in concepts.json / progress.json",
+      "description": "Snake_case ID matching the folder name under concepts_dir and the entry in index.md",
       "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
     },
     "name": {
       "type": "string",
-      "description": "Human-readable concept name matching the title in concepts.json"
+      "description": "Human-readable concept name"
     },
     "description": {
       "type": "string",
@@ -22,13 +22,42 @@
     },
     "related_concepts": {
       "type": "array",
-      "description": "IDs from concepts.json that are closely related — prerequisites, follow-ons, or siblings",
+      "description": "[[wikilink]] references to closely related concept IDs — prerequisites, follow-ons, or siblings",
       "items": { "type": "string" },
       "uniqueItems": true
     },
     "tags": {
       "type": "array",
       "description": "Free-form keywords for cross-cutting themes",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "status": {
+      "type": "string",
+      "description": "Learning progress for this concept",
+      "enum": ["Not started", "In progress", "Done"]
+    },
+    "started_at": {
+      "description": "ISO date when the concept was first taught, null if not yet started",
+      "oneOf": [
+        { "type": "string", "format": "date" },
+        { "type": "null" }
+      ]
+    },
+    "completed_at": {
+      "description": "ISO date when the learner confirmed understanding and status was set to Done, null otherwise",
+      "oneOf": [
+        { "type": "string", "format": "date" },
+        { "type": "null" }
+      ]
+    },
+    "notes": {
+      "type": "boolean",
+      "description": "True when this concept folder has been written and main.md exists"
+    },
+    "sources": {
+      "type": "array",
+      "description": "[[wikilink]] references to source nodes that have informed this concept",
       "items": { "type": "string" },
       "uniqueItems": true
     }
