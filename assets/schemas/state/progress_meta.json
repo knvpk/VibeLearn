@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "progress_meta.json",
+  "title": "Progress State",
+  "description": "Schema for .state/_progress.json — per-concept and per-workflow learning state. Never edit manually; written by the tutor.",
+  "type": "object",
+  "required": ["concepts", "workflows"],
+  "additionalProperties": false,
+  "properties": {
+    "concepts": {
+      "type": "object",
+      "description": "Map of concept_id → progress entry. Keys are snake_case concept IDs matching _plan.json and concepts_dir folder names.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "started_at", "completed_at"],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Learning progress for this concept",
+            "enum": ["Not started", "In progress", "Done"]
+          },
+          "started_at": {
+            "description": "ISO date when the concept was first taught, null if not yet started",
+            "oneOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ]
+          },
+          "completed_at": {
+            "description": "ISO date when the learner confirmed understanding, null otherwise",
+            "oneOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ]
+          }
+        }
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "description": "Map of workflow_id → walkthrough state. Keys are snake_case workflow IDs matching workflows_dir file names.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["last_walked", "steps_completed"],
+        "additionalProperties": false,
+        "properties": {
+          "last_walked": {
+            "description": "ISO date of the most recent walkthrough, null if never walked",
+            "oneOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ]
+          },
+          "steps_completed": {
+            "type": "integer",
+            "description": "Number of steps completed in the most recent walkthrough",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

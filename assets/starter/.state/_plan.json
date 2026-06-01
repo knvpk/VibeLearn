@@ -1,0 +1,14 @@
+{
+  "topic": "<Your Topic>",
+  "phases": [
+    {
+      "id": "phase_1",
+      "title": "Foundations",
+      "goal": "Establish core vocabulary and mental model.",
+      "duration": "2–4 weeks",
+      "prerequisites": [],
+      "concepts": ["introduction"]
+    }
+  ],
+  "workflows": []
+}

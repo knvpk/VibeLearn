@@ -2,9 +2,9 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "concept_meta.json",
   "title": "Concept Frontmatter",
-  "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/main.md file. Progress tracking lives here — there is no separate progress file.",
+  "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/main.md file. Content only — progress state lives in .state/_progress.json.",
   "type": "object",
-  "required": ["id", "name", "description", "related_concepts", "tags", "status", "started_at", "completed_at", "notes", "sources"],
+  "required": ["id", "name", "description", "related_concepts", "tags", "sources"],
   "additionalProperties": false,
   "properties": {
     "id": {
@@ -31,29 +31,6 @@
       "description": "Free-form keywords for cross-cutting themes",
       "items": { "type": "string" },
       "uniqueItems": true
-    },
-    "status": {
-      "type": "string",
-      "description": "Learning progress for this concept",
-      "enum": ["Not started", "In progress", "Done"]
-    },
-    "started_at": {
-      "description": "ISO date when the concept was first taught, null if not yet started",
-      "oneOf": [
-        { "type": "string", "format": "date" },
-        { "type": "null" }
-      ]
-    },
-    "completed_at": {
-      "description": "ISO date when the learner confirmed understanding and status was set to Done, null otherwise",
-      "oneOf": [
-        { "type": "string", "format": "date" },
-        { "type": "null" }
-      ]
-    },
-    "notes": {
-      "type": "boolean",
-      "description": "True when this concept folder has been written and main.md exists"
     },
     "sources": {
       "type": "array",

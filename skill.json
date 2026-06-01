@@ -24,9 +24,11 @@
     "steps": [
       "Copy vibe_learn.config.template.yaml to vibe_learn.config.yaml in your project root",
       "Edit vibe_learn.config.yaml with your topic, preferred language/framework, and wiki paths",
-      "Create your wiki/ directory structure: wiki/concepts/, wiki/sources/, wiki/authors/, wiki/tools/",
-      "Copy assets/starter/index.md → wiki/index.md, assets/starter/_plan.md → wiki/_plan.md, assets/starter/log.md → wiki/log.md",
-      "Copy assets/schemas/*.json → schemas/ in your project root",
+      "Create your wiki/ directory structure: wiki/concepts/, wiki/sources/, wiki/authors/, wiki/tools/, wiki/workflows/",
+      "Copy assets/starter/index.md → wiki/index.md, assets/starter/log.md → wiki/log.md",
+      "Copy assets/starter/.state/ → wiki/.state/ (contains _plan.json, _progress.json, _log.json)",
+      "Edit wiki/.state/_plan.json — set topic and define your phases and concept IDs",
+      "Copy assets/schemas/*.json → schemas/ and assets/schemas/state/*.json → schemas/state/ in your project root",
       "Open wiki/ as an Obsidian vault to browse the knowledge graph as it grows",
       "Invoke /vibe_learn in Claude Code to begin"
     ]

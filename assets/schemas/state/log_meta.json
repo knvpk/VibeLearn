@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "log_meta.json",
+  "title": "Log State",
+  "description": "Schema for .state/_log.json — append-only operation log. Never edit manually; each entry is appended by the tutor.",
+  "type": "object",
+  "required": ["entries"],
+  "additionalProperties": false,
+  "properties": {
+    "entries": {
+      "type": "array",
+      "description": "Chronological list of all operations",
+      "items": {
+        "oneOf": [
+          {
+            "title": "Ingest entry",
+            "type": "object",
+            "required": ["date", "operation", "title", "source", "author", "concepts_updated"],
+            "additionalProperties": false,
+            "properties": {
+              "date": { "type": "string", "format": "date" },
+              "operation": { "type": "string", "enum": ["ingest"] },
+              "title": { "type": "string", "description": "Source title" },
+              "source": { "type": "string", "description": "Source node ID" },
+              "author": { "type": "string", "description": "Author node ID, or null if unknown" },
+              "concepts_updated": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Concept IDs updated or created during this ingest"
+              }
+            }
+          },
+          {
+            "title": "Query entry",
+            "type": "object",
+            "required": ["date", "operation", "title", "pages_consulted", "answer_filed"],
+            "additionalProperties": false,
+            "properties": {
+              "date": { "type": "string", "format": "date" },
+              "operation": { "type": "string", "enum": ["query"] },
+              "title": { "type": "string", "description": "Short question title" },
+              "pages_consulted": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Concept or node IDs read to answer the query"
+              },
+              "answer_filed": {
+                "description": "Node ID of the filed synthesis page, or null if not filed",
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "null" }
+                ]
+              }
+            }
+          },
+          {
+            "title": "Lint entry",
+            "type": "object",
+            "required": ["date", "operation", "issues_found", "issues_fixed"],
+            "additionalProperties": false,
+            "properties": {
+              "date": { "type": "string", "format": "date" },
+              "operation": { "type": "string", "enum": ["lint"] },
+              "issues_found": { "type": "integer", "minimum": 0 },
+              "issues_fixed": { "type": "integer", "minimum": 0 }
+            }
+          },
+          {
+            "title": "Workflow entry",
+            "type": "object",
+            "required": ["date", "operation", "id", "name", "prerequisites_met", "steps_completed"],
+            "additionalProperties": false,
+            "properties": {
+              "date": { "type": "string", "format": "date" },
+              "operation": { "type": "string", "enum": ["workflow"] },
+              "id": { "type": "string", "description": "Workflow node ID" },
+              "name": { "type": "string", "description": "Workflow display name" },
+              "prerequisites_met": { "type": "boolean" },
+              "steps_completed": { "type": "integer", "minimum": 0 }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "plan_meta.json",
+  "title": "Plan State",
+  "description": "Schema for .state/_plan.json — curriculum structure. Edit this to define phases and concept order.",
+  "type": "object",
+  "required": ["topic", "phases", "workflows"],
+  "additionalProperties": false,
+  "properties": {
+    "topic": {
+      "type": "string",
+      "description": "Subject area — matches the topic field in vibe_learn.config.yaml"
+    },
+    "phases": {
+      "type": "array",
+      "description": "Ordered list of learning phases",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "goal", "duration", "prerequisites", "concepts"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Snake_case phase identifier",
+            "pattern": "^phase_[0-9]+$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable phase name"
+          },
+          "goal": {
+            "type": "string",
+            "description": "One-sentence learning outcome for this phase"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Estimated time range, e.g. '2–4 weeks'"
+          },
+          "prerequisites": {
+            "type": "array",
+            "description": "Phase IDs that must be completed before this phase",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "concepts": {
+            "type": "array",
+            "description": "Ordered list of concept IDs taught in this phase",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "workflows": {
+      "type": "array",
+      "description": "Workflow IDs available in this curriculum (prerequisite-gated by concept completion)",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    }
+  }
+}

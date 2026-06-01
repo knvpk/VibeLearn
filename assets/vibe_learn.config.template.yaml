@@ -12,12 +12,6 @@ wiki:
   # The LLM reads this to determine concept order and check what exists before teaching or ingesting.
   index_file: wiki/index.md
 
-  # Phase ordering, durations, and prerequisites
-  plan_file: wiki/_plan.md
-
-  # Append-only log of all ingest, query, and lint operations
-  log_file: wiki/log.md
-
   # Per-concept folders (flat — never nested, even for subtopics)
   concepts_dir: wiki/concepts/
 
