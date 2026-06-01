@@ -33,8 +33,14 @@
             "description": "One-sentence learning outcome for this phase"
           },
           "duration": {
-            "type": "string",
-            "description": "Estimated time range, e.g. '2–4 weeks'"
+            "type": "object",
+            "description": "Estimated time range for this phase",
+            "required": ["min_weeks", "max_weeks"],
+            "additionalProperties": false,
+            "properties": {
+              "min_weeks": { "type": "integer", "minimum": 1, "description": "Minimum weeks for this phase" },
+              "max_weeks": { "type": "integer", "minimum": 1, "description": "Maximum weeks for this phase" }
+            }
           },
           "prerequisites": {
             "type": "array",

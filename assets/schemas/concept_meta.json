@@ -38,6 +38,11 @@
       "items": { "type": "string" },
       "uniqueItems": true
     },
+    "difficulty": {
+      "type": "string",
+      "description": "Difficulty level of this concept relative to the curriculum",
+      "enum": ["beginner", "intermediate", "advanced", "expert"]
+    },
     "workflows": {
       "type": "array",
       "description": "[[wikilink]] references to workflow nodes that list this concept as a prerequisite. Optional — populated when a workflow is created that gates on this concept.",

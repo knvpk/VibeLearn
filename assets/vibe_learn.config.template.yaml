@@ -5,36 +5,9 @@
 topic: "<Your Topic Here>"   # e.g. "Agentic AI Engineering", "Systems Programming", "ML Fundamentals"
 
 wiki:
-  # Root directory for all wiki files
+  # Root directory — all paths are derived by convention:
+  #   index.md, concepts/, sources/, authors/, tools/, workflows/, .state/
   root: wiki/
-
-  # Concept map — phases and topics listed with [[wikilinks]], organized by phase.
-  # The LLM reads this to determine concept order and check what exists before teaching or ingesting.
-  index_file: wiki/index.md
-
-  # Per-concept folders (flat — never nested, even for subtopics)
-  concepts_dir: wiki/concepts/
-
-  # Source nodes — one .md per article, paper, video, or docs page
-  sources_dir: wiki/sources/
-
-  # Author nodes — one .md per person
-  authors_dir: wiki/authors/
-
-  # Tool nodes — one .md per tool, library, framework, or service
-  tools_dir: wiki/tools/
-
-  # Workflow nodes — one .md per executable process or step-by-step guide
-  # Workflows answer "how do I execute Y"; concepts answer "what is X"
-  workflows_dir: wiki/workflows/
-
-  # Schemas — the LLM reads these before writing any frontmatter
-  # Point these at copies of assets/schemas/ placed in your project
-  concept_schema: schemas/concept_meta.json
-  source_schema: schemas/source_meta.json
-  author_schema: schemas/author_meta.json
-  tool_schema: schemas/tool_meta.json
-  workflow_schema: schemas/workflow_meta.json
 
 audience:
   # Who this content is written for — shapes explanation depth and assumed knowledge
@@ -65,3 +38,17 @@ examples:
     - "<Pattern1>"   # e.g. class names, decorators, core primitives your framework uses
     - "<Pattern2>"
     - "<Pattern3>"
+
+ingest:
+  # Maximum number of distinct concepts from a single source before asking which to prioritize
+  max_concepts_before_ask: 3
+
+  # Prompt user to create an author node when a new author is encountered during ingest
+  auto_propose_author: true
+
+  # How to handle procedural sources (tutorials, how-tos, recipes)
+  detect_workflows: ask   # "ask" | "always" | "never"
+
+output:
+  # Default format for all diagrams
+  diagram_format: mermaid   # "mermaid" | "d2" | "svg"

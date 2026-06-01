@@ -5,7 +5,7 @@
       "id": "phase_1",
       "title": "Foundations",
       "goal": "Establish core vocabulary and mental model.",
-      "duration": "2–4 weeks",
+      "duration": { "min_weeks": 2, "max_weeks": 4 },
       "prerequisites": [],
       "concepts": ["introduction"]
     }

@@ -12,7 +12,7 @@
       "description": "Map of concept_id → progress entry. Keys are snake_case concept IDs matching _plan.json and concepts_dir folder names.",
       "additionalProperties": {
         "type": "object",
-        "required": ["status", "started_at", "completed_at"],
+        "required": ["status", "started_at", "completed_at", "last_reviewed", "review_due"],
         "additionalProperties": false,
         "properties": {
           "status": {
@@ -29,6 +29,20 @@
           },
           "completed_at": {
             "description": "ISO date when the learner confirmed understanding, null otherwise",
+            "oneOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ]
+          },
+          "last_reviewed": {
+            "description": "ISO date of the most recent spaced-repetition review, null if never reviewed after completion",
+            "oneOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ]
+          },
+          "review_due": {
+            "description": "ISO date when the next review is due; null until the concept is Done, then set to completed_at + 7 days by default",
             "oneOf": [
               { "type": "string", "format": "date" },
               { "type": "null" }
