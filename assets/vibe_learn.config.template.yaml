@@ -30,12 +30,17 @@ wiki:
   # Tool nodes — one .md per tool, library, framework, or service
   tools_dir: wiki/tools/
 
+  # Workflow nodes — one .md per executable process or step-by-step guide
+  # Workflows answer "how do I execute Y"; concepts answer "what is X"
+  workflows_dir: wiki/workflows/
+
   # Schemas — the LLM reads these before writing any frontmatter
   # Point these at copies of assets/schemas/ placed in your project
   concept_schema: schemas/concept_meta.json
   source_schema: schemas/source_meta.json
   author_schema: schemas/author_meta.json
   tool_schema: schemas/tool_meta.json
+  workflow_schema: schemas/workflow_meta.json
 
 examples:
   # Language for all code examples

@@ -60,6 +60,12 @@
       "description": "[[wikilink]] references to source nodes that have informed this concept",
       "items": { "type": "string" },
       "uniqueItems": true
+    },
+    "workflows": {
+      "type": "array",
+      "description": "[[wikilink]] references to workflow nodes that list this concept as a prerequisite. Optional — populated when a workflow is created that gates on this concept.",
+      "items": { "type": "string" },
+      "uniqueItems": true
     }
   }
 }

@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "workflow_meta.json",
+  "title": "Workflow Frontmatter",
+  "description": "Schema for the YAML frontmatter in every <workflows_dir>/<id>.md file. Workflows answer 'how do I execute Y' — they are procedural, prerequisite-gated, and distinct from concepts which answer 'what is X'.",
+  "type": "object",
+  "required": ["id", "name", "description", "status", "prerequisites", "concepts", "tools", "sources", "notes", "created_at"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Snake_case ID used as the filename and in [[wikilinks]]",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable workflow name (e.g. 'Fine-tune a LoRA model')"
+    },
+    "description": {
+      "type": "string",
+      "description": "One-sentence plain-English summary of what this workflow accomplishes"
+    },
+    "status": {
+      "type": "string",
+      "description": "Lifecycle state — separate from concept status. 'draft' = steps not yet complete; 'ready' = steps verified and walkable; 'deprecated' = superseded or outdated.",
+      "enum": ["draft", "ready", "deprecated"]
+    },
+    "prerequisites": {
+      "type": "array",
+      "description": "[[wikilink]] references to concept nodes the learner must have at status Done before this workflow is useful. Subset of concepts[].",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "concepts": {
+      "type": "array",
+      "description": "[[wikilink]] references to all concept nodes this workflow touches, including non-prerequisite ones",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "tools": {
+      "type": "array",
+      "description": "[[wikilink]] references to tool nodes used in this workflow",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "related_workflows": {
+      "type": "array",
+      "description": "[[wikilink]] references to workflows that are related, sequential, or alternative",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "sources": {
+      "type": "array",
+      "description": "[[wikilink]] references to source nodes (articles, tutorials, docs) that informed this workflow",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form keywords for cross-cutting themes",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "difficulty": {
+      "description": "Estimated difficulty for a learner who has met all prerequisites",
+      "oneOf": [
+        { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },
+        { "type": "null" }
+      ]
+    },
+    "estimated_time": {
+      "description": "Rough time to complete one run of this workflow (e.g. '30 min', '2–4 hours')",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "notes": {
+      "type": "boolean",
+      "description": "True when the steps section in this file is populated and the workflow has been walked through at least once"
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO date when this workflow was first created (YYYY-MM-DD)",
+      "format": "date"
+    },
+    "last_updated": {
+      "description": "ISO date of last edit to steps or frontmatter",
+      "oneOf": [
+        { "type": "string", "format": "date" },
+        { "type": "null" }
+      ]
+    }
+  }
+}
