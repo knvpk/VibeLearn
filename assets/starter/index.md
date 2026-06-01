@@ -25,3 +25,11 @@ their folders. Use `[[wikilinks]]` for every concept reference.
      Format: - [[workflow_id]] — requires: [[concept_id1]], [[concept_id2]]
      The LLM reads this section during lint to surface newly-unlocked workflows. -->
 
+---
+
+## Terms
+
+<!-- One line per term: - [[term_id]] — one-sentence definition
+     Add terms here as they are created via teaching or ingest.
+     Terms are vocabulary definitions, not full learning concepts. -->
+

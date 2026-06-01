@@ -43,6 +43,12 @@
       "description": "ISO date when this source was added to the wiki (YYYY-MM-DD)",
       "format": "date"
     },
+    "terms": {
+      "type": "array",
+      "description": "[[wikilink]] references to term nodes defined or introduced in this source",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
     "tags": {
       "type": "array",
       "description": "Free-form keywords",

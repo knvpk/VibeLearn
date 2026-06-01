@@ -24,7 +24,7 @@
     "steps": [
       "Copy vibe_learn.config.template.yaml to vibe_learn.config.yaml in your project root",
       "Edit vibe_learn.config.yaml with your topic, preferred language/framework, and wiki paths",
-      "Create your wiki/ directory structure: wiki/concepts/, wiki/sources/, wiki/authors/, wiki/tools/, wiki/workflows/",
+      "Create your wiki/ directory structure: wiki/concepts/, wiki/sources/, wiki/authors/, wiki/tools/, wiki/workflows/, wiki/terms/",
       "Copy assets/starter/index.md → wiki/index.md, assets/starter/log.md → wiki/log.md",
       "Copy assets/starter/.state/ → wiki/.state/ (contains _plan.json, _progress.json, _log.json)",
       "Edit wiki/.state/_plan.json — set topic and define your phases and concept IDs",
