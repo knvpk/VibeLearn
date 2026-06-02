@@ -10,21 +10,21 @@ When explaining flows, architectures, lifecycles, or relationships — never des
 
 ## File Naming and Placement
 
-Each diagram gets its own file named after what it shows (e.g. `tokenization_pipeline.md`, `attention_mechanism.md`, `rag_flow.md`). Never put multiple diagrams in one `flow.md`.
+Each diagram gets its own file named after what it shows (e.g. `tokenization_pipeline.md`, `attention_mechanism.md`, `rag_flow.md`). Never put multiple diagrams in one file.
 
-Link each diagram file inline from the exact section in `internals.md`, `patterns.md`, or `examples.md` where it is relevant — not just from `main.md`.
+Link each diagram file inline from the exact section in `<id>_internals.md`, `<id>_patterns.md`, or `<id>_examples.md` where it is relevant — not from the concept entry file alone.
 
 ## Example Layout
 
 ```
 {curriculum.concepts_dir}transformer_architecture/
-  main.md
-  internals.md          ← links to attention_mechanism.md and encoder_decoder.md inline
-  patterns.md           ← links to inference_flow.md inline
+  transformer_architecture.md
+  transformer_architecture_internals.md    ← links to attention_mechanism.md and encoder_decoder.md inline
+  transformer_architecture_patterns.md    ← links to inference_flow.md inline
+  transformer_architecture_examples.md
   attention_mechanism.md
   encoder_decoder.md
   inference_flow.md
-  examples.md
 ```
 
 ## Example Diagram

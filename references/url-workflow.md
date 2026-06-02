@@ -23,10 +23,10 @@ When the user provides a URL (blog post, article, documentation page, or any ext
 ## Step 3 — Save the content
 
 Follow the same saving rules as a taught session (see [saving-content.md](saving-content.md)):
-- Write or update `main.md` with YAML frontmatter (read `{curriculum.concept_schema}` first)
-- Add a `## Source` section at the bottom of `main.md` with the original URL and a one-line description of what the article covers
-- Split sub-topics, code walkthroughs, and deep-dives into separate files (`internals.md`, `examples.md`, `patterns.md`, etc.) — never dump everything into `main.md`
-- Link all split files from `main.md` using relative markdown links
+- Write or update `<id>.md` with YAML frontmatter (read `{curriculum.concept_schema}` first)
+- Add a `## Source` section at the bottom of `<id>.md` with the original URL and a one-line description of what the article covers
+- Split sub-topics, code walkthroughs, and deep-dives into separate files prefixed with the concept ID (`<id>_internals.md`, `<id>_examples.md`, `<id>_patterns.md`, etc.) — never dump everything into `<id>.md`
+- Link all split files from `<id>.md` using relative markdown links
 - For code examples copied from the article, preserve them verbatim with a `<!-- source: <url> -->` attribution comment
 - Add diagrams per the [Diagrams rules](diagrams.md) when the article covers flows, architectures, or lifecycles
 

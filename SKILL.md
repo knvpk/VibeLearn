@@ -85,7 +85,7 @@ If any `.state/` file does not exist, offer to create it from the starter templa
 
 Three content layers:
 
-**Concept folders** (`{wiki.root}concepts/<id>/main.md`) — one flat folder per concept. `main.md` is the entry point; split files live alongside it. Progress tracking lives in `main.md` frontmatter — there is no separate progress file.
+**Concept folders** (`{wiki.root}concepts/<id>/<id>.md`) — one flat folder per concept. `<id>.md` is the entry point; split files live alongside it named `<id>_<type>.md`. Progress tracking lives in `<id>.md` frontmatter — there is no separate progress file.
 
 **Node files** — flat markdown files, one per entity:
 - Sources: `{wiki.root}sources/<id>.md`
@@ -117,7 +117,7 @@ When asked about a concept:
 6. If you introduce jargon that has a term node in `{wiki.root}terms/`, inline it as `[[<term_id>]]`; if no term node exists yet, offer to create one after the explanation
 
 **Save trigger** — when the learner confirms understanding ("got it", "makes sense", answers a check question correctly, or explicitly moves on):
-- Write/update `{wiki.root}concepts/<id>/main.md` — read `schemas/concept_meta.json` first (content fields only; no progress in frontmatter)
+- Write/update `{wiki.root}concepts/<id>/<id>.md` — read `schemas/concept_meta.json` first (content fields only; no progress in frontmatter)
 - Read `{wiki.root}.state/_progress.json`, update the concept entry: set `status` (`Not started` → `In progress` → `Done`), `started_at` on first teach, `completed_at` when Done; on Done also set `last_reviewed: null` and `review_due` to `completed_at` + 7 days; write the file back
 - Briefly confirm: "Saved. Ready for the next one?"
 
@@ -130,7 +130,7 @@ When the user says "next topic", "what's next", "continue", etc.:
 4. Otherwise, find the first concept whose status is `Not started` (or absent from `_progress.json`) — announce: "Next up: **<name>** (`[[<id>]]`) in Phase N — <one-line description>. Ready?"
 5. Wait for confirmation before teaching
 
-## concept main.md structure
+## concept <id>.md structure
 
 Read `schemas/concept_meta.json` before writing. All fields are required:
 
@@ -154,9 +154,9 @@ sources:
 One-paragraph plain-English summary.
 
 ## Contents
-- [How it works](internals.md)
-- [Examples](examples.md)
-- [Patterns & pitfalls](patterns.md)
+- [How it works](transformer_architecture_internals.md)
+- [Examples](transformer_architecture_examples.md)
+- [Patterns & pitfalls](transformer_architecture_patterns.md)
 
 ## Key Takeaways
 - Bullet 1
@@ -168,7 +168,7 @@ One-paragraph plain-English summary.
 
 **Folder rules**:
 - Flat — no nesting. Even subtopics of other concepts get sibling folders. Relationships live in `related_concepts` wikilinks, not folder hierarchy.
-- Keep `main.md` under ~80 lines. Split sub-topics, deep-dives, code walkthroughs into sibling files (`internals.md`, `examples.md`, `patterns.md`, etc.). Link all split files from `main.md`.
+- Keep `<id>.md` under ~80 lines. Split sub-topics, deep-dives, code walkthroughs into sibling files prefixed with the concept ID (`<id>_internals.md`, `<id>_examples.md`, `<id>_patterns.md`, etc.). Link all split files from `<id>.md`.
 
 ## Walk through a workflow
 
@@ -230,12 +230,12 @@ Map the source to the workflow's `sources` array in addition to any concept `sou
 
 ### Step 3 — Update concept pages (enrich, never duplicate)
 For each matched concept:
-- Read the existing `main.md` first
+- Read the existing `<id>.md` first
 - Add new insights only where they don't repeat what's already written
 - Append `[[<source_id>]]` to the `sources` frontmatter array
 - Append to `## From sources`: `- [[<source_id>]] — one-line description of what this source adds`
-- Add or update split files (`internals.md`, `examples.md`, etc.) for new sub-topics from this source
-- Link any new split files from `main.md`
+- Add or update split files (`<id>_internals.md`, `<id>_examples.md`, etc.) for new sub-topics from this source
+- Link any new split files from `<id>.md`
 
 ### Step 4 — Create source node
 Write `{wiki.root}sources/<id>.md` — read `schemas/source_meta.json` first. Use `[[wikilinks]]` for `author` and `concepts` fields.
@@ -260,7 +260,7 @@ Append to `{wiki.root}.state/_log.json`:
 
 When answering questions against the wiki:
 1. Read `{wiki.root}index.md` to identify relevant concept folders
-2. Read relevant `main.md` files and their split files
+2. Read relevant `<id>.md` files and their split files
 3. Synthesize answer with `[[wikilinks]]` as inline citations
 
 **File good answers back**: if an answer required non-trivial synthesis (a comparison, analysis, or discovered connection not already in the wiki), ask: "This synthesis is worth saving — want me to file it as a new page?" If yes, create an appropriate node, link it from related concept pages, and add it to `{wiki.root}index.md` under the right phase.
@@ -494,7 +494,7 @@ Use `{output.diagram_format}` as the default. Format capabilities:
 - **d2** — architecture diagrams with layout control or multi-container systems
 - **svg** — only when mermaid/d2 can't express it
 
-Each diagram gets its own file named after what it shows (e.g. `attention_flow.md`, `tokenization_pipeline.md`). Never combine multiple diagrams in one file. Link from the exact section in `internals.md`, `patterns.md`, or `examples.md` where it's relevant — not just from `main.md`.
+Each diagram gets its own file named after what it shows (e.g. `attention_flow.md`, `tokenization_pipeline.md`). Never combine multiple diagrams in one file. Link from the exact section in `<id>_internals.md`, `<id>_patterns.md`, or `<id>_examples.md` where it's relevant — not from the concept entry file alone.
 
 ## Proactive upkeep
 
