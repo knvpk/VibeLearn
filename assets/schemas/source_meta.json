@@ -54,6 +54,20 @@
       "description": "Free-form keywords",
       "items": { "type": "string" },
       "uniqueItems": true
+    },
+    "publication_date": {
+      "description": "Date the source was published (YYYY-MM-DD or YYYY)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "notes": {
+      "description": "Free-form notes or overflow metadata that doesn't fit a first-class field",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
     }
   }
 }

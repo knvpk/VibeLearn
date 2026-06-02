@@ -48,6 +48,13 @@
       "description": "[[wikilink]] references to workflow nodes that list this concept as a prerequisite. Optional — populated when a workflow is created that gates on this concept.",
       "items": { "type": "string" },
       "uniqueItems": true
+    },
+    "notes": {
+      "description": "Free-form notes or overflow metadata that doesn't fit a first-class field",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
     }
   }
 }

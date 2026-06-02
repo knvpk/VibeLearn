@@ -76,8 +76,11 @@
       ]
     },
     "notes": {
-      "type": "boolean",
-      "description": "True when the steps section in this file is populated and the workflow has been walked through at least once"
+      "description": "Free-form notes or overflow metadata. Previously mistyped as boolean.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
     },
     "created_at": {
       "type": "string",

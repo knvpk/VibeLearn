@@ -30,6 +30,13 @@
         { "type": "null" }
       ]
     },
+    "company": {
+      "description": "Organisation or company the author is affiliated with",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
     "expertise": {
       "type": "array",
       "description": "[[wikilink]] references to concept IDs this author covers well",
