@@ -69,10 +69,10 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 
 Schema paths are hardcoded — never read from config:
-`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`
+`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`
 
 Body-section schemas (resolved via `$ref` from each top-level schema):
-`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`
+`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`
 
 Then derive the state directory (hardcoded, not in config):
 - `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
@@ -96,6 +96,7 @@ Three content layers:
 - Tools: `{wiki.root}tools/<id>.md`
 - Terms: `{wiki.root}terms/<id>.md` — single-sentence vocabulary definitions, wikilink-able from any node
 - Workflows: `{wiki.root}workflows/<id>.md` — procedural step-by-step guides, prerequisite-gated by concept status
+- Ideas: `{wiki.root}ideas/<id>.md` — raw or evolving thoughts that may be promoted to a concept, workflow, or project
 
 **Navigation files**:
 - `{wiki.root}index.md` — full concept map with `[[wikilinks]]`, organized by phase, plus a `## Terms` section listing all term IDs. The LLM reads this to check what exists and navigate the graph.
@@ -319,7 +320,7 @@ When the user asks to "lint" or "health check" the wiki:
 
 1. Scan `{wiki.root}concepts/` — collect all concept IDs (folder names)
 2. Read `{wiki.root}index.md` — collect all IDs listed in both concept and workflow sections
-3. Scan `{wiki.root}sources/`, `{wiki.root}authors/`, `{wiki.root}tools/`, `{wiki.root}workflows/` — collect all node IDs
+3. Scan `{wiki.root}sources/`, `{wiki.root}authors/`, `{wiki.root}tools/`, `{wiki.root}workflows/`, `{wiki.root}ideas/` — collect all node IDs
 4. Read `{wiki.root}.state/_progress.json` and `{wiki.root}.state/_plan.json`. Check for:
    - Concept folders that exist but are not listed in `_plan.json` (orphan folders)
    - Concepts listed in `_plan.json` with no folder (stubs)
@@ -333,6 +334,8 @@ When the user asks to "lint" or "health check" the wiki:
    - Term files in `{wiki.root}terms/` not listed in `index.md` under `## Terms` (orphan terms)
    - `[[wikilinks]]` in concept or source pages referencing a term ID with no matching file in `{wiki.root}terms/` (dangling term links)
    - Term nodes with an empty `related_concepts` array (isolated terms with no bridge to the curriculum)
+   - Idea nodes with `status: promoted` but no `promoted_to` set (broken promotion link)
+   - Idea nodes with `promoted_to` pointing to a concept or workflow that doesn't exist (dangling promotion link)
 5. Report findings as a numbered checklist
 6. Ask: "Want me to fix any of these?"
 
@@ -520,6 +523,50 @@ One-paragraph summary of what this workflow produces.
 
 ## Notes
 ```
+
+### Idea node
+
+Read `schemas/idea.json` before writing. Required frontmatter: `id`, `title`, `status`, `created_at`, `tags`, `category`. Body sections from `schemas/content/idea.json`: `## Description`, `## Problem`, `## Approach`, `## Open Questions`, `## Notes`.
+
+```markdown
+---
+id: spaced_repetition_ui
+title: "Spaced Repetition UI"
+status: exploring
+created_at: 2026-06-03
+category: tooling
+priority: medium
+tags:
+  - ux
+  - review
+related_concepts:
+  - "[[spaced_repetition]]"
+related_ideas: []
+sources: []
+effort: medium
+motivation: "Surface due-review concepts in a dedicated UI panel so the learner never misses a review date."
+---
+
+## Description
+A lightweight sidebar or dashboard that surfaces concepts whose `review_due` date has passed, letting the learner kick off a review session in one click.
+
+## Problem
+- review_due dates exist in _progress.json but the learner must remember to check them manually
+
+## Approach
+- Read _progress.json on startup; filter concepts where review_due ≤ today
+- Render a sorted list with concept name, days overdue, and a "Review now" button
+
+## Open Questions
+- Should this be a separate command or part of the existing progress report?
+
+## Notes
+```
+
+**Lifecycle rules**:
+- When `status` changes to `promoted`, set `promoted_to` to the `[[wikilink]]` of the concept or workflow it became
+- When creating a concept or workflow directly from an idea, back-link by setting `promoted_to` on the idea node
+- Never delete an idea node — set `status: shelved` instead
 
 ### Term node
 
