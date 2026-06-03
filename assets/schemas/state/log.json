@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "log_meta.json",
+  "$id": "log.json",
   "title": "Log State",
   "description": "Schema for .state/_log.json — append-only operation log. Never edit manually; each entry is appended by the tutor.",
   "type": "object",

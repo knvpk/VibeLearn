@@ -1,21 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "author_meta.json",
+  "$id": "author.json",
   "title": "Author Frontmatter",
   "description": "Schema for the YAML frontmatter in every <authors_dir>/<id>.md file",
   "type": "object",
   "required": ["id", "name"],
   "additionalProperties": false,
-  "x-body-sections": {
-    "description": "Markdown body sections expected in every author file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
-    "sections": {
-      "## Notes": {
-        "description": "Free-form opinion or observations recorded verbatim from the user.",
-        "format": "freeform-markdown",
-        "ingest": "append paragraphs; preserve existing text"
-      }
-    }
-  },
+  "x-body-sections": { "$ref": "content/author.json" },
   "properties": {
     "id": {
       "type": "string",

@@ -1,31 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "tool_meta.json",
+  "$id": "tool.json",
   "title": "Tool Frontmatter",
   "description": "Schema for the YAML frontmatter in every <tools_dir>/<id>.md file",
   "type": "object",
   "required": ["id", "name", "category"],
   "additionalProperties": false,
-  "x-body-sections": {
-    "description": "Markdown body sections expected in every tool file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
-    "sections": {
-      "## Pros": {
-        "description": "Bullet list of advantages noted by the user. Only populated from explicit user opinion, never inferred.",
-        "format": "bullet-list",
-        "ingest": "append new bullets; never duplicate"
-      },
-      "## Cons": {
-        "description": "Bullet list of drawbacks noted by the user. Only populated from explicit user opinion, never inferred.",
-        "format": "bullet-list",
-        "ingest": "append new bullets; never duplicate"
-      },
-      "## Notes": {
-        "description": "Free-form opinion or observations recorded verbatim from the user.",
-        "format": "freeform-markdown",
-        "ingest": "append paragraphs; preserve existing text"
-      }
-    }
-  },
+  "x-body-sections": { "$ref": "content/tool.json" },
   "properties": {
     "id": {
       "type": "string",

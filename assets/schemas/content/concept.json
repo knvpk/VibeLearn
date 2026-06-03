@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "concept.json",
+  "title": "Concept Body Sections",
+  "description": "Markdown body sections expected in every concept file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
+  "type": "object",
+  "properties": {
+    "## Key Takeaways": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "Bullet list of the most important things to understand about this concept. Append new bullets; never duplicate."
+    },
+    "## From sources": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "string", "format": "uri" }
+        ]
+      },
+      "uniqueItems": true,
+      "description": "One entry per source wikilink or URL that contributed to this concept, describing what it added. Append new entries; never duplicate."
+    },
+    "## Notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form overflow notes that don't fit a first-class section. Append paragraphs; preserve existing text."
+    }
+  },
+  "additionalProperties": false
+}

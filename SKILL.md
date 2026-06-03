@@ -69,12 +69,15 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 
 Schema paths are hardcoded — never read from config:
-`schemas/concept_meta.json`, `schemas/source_meta.json`, `schemas/author_meta.json`, `schemas/tool_meta.json`, `schemas/workflow_meta.json`, `schemas/term_meta.json`
+`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`
+
+Body-section schemas (resolved via `$ref` from each top-level schema):
+`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`
 
 Then derive the state directory (hardcoded, not in config):
-- `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan_meta.json`)
-- `{wiki.root}.state/_progress.json` — learning state (schema: `schemas/state/progress_meta.json`)
-- `{wiki.root}.state/_log.json` — operation log (schema: `schemas/state/log_meta.json`)
+- `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
+- `{wiki.root}.state/_progress.json` — learning state (schema: `schemas/state/progress.json`)
+- `{wiki.root}.state/_log.json` — operation log (schema: `schemas/state/log.json`)
 
 Read the relevant schema before writing any state file, just as you do for content files.
 
@@ -117,7 +120,7 @@ When asked about a concept:
 6. If you introduce jargon that has a term node in `{wiki.root}terms/`, inline it as `[[<term_id>]]`; if no term node exists yet, offer to create one after the explanation
 
 **Save trigger** — when the learner confirms understanding ("got it", "makes sense", answers a check question correctly, or explicitly moves on):
-- Write/update `{wiki.root}concepts/<id>/<id>.md` — read `schemas/concept_meta.json` first (content fields only; no progress in frontmatter)
+- Write/update `{wiki.root}concepts/<id>/<id>.md` — read `schemas/concept.json` first (content fields only; no progress in frontmatter)
 - Read `{wiki.root}.state/_progress.json`, update the concept entry: set `status` (`Not started` → `In progress` → `Done`), `started_at` on first teach, `completed_at` when Done; on Done also set `last_reviewed: null` and `review_due` to `completed_at` + 7 days; write the file back
 - Briefly confirm: "Saved. Ready for the next one?"
 
@@ -132,7 +135,7 @@ When the user says "next topic", "what's next", "continue", etc.:
 
 ## concept <id>.md structure
 
-Read `schemas/concept_meta.json` before writing. Apply the schema-driven structure rule (frontmatter from `properties`, body from `x-body-sections`). All frontmatter fields are required:
+Read `schemas/concept.json` before writing. Apply the schema-driven structure rule (frontmatter from `properties`, body from `x-body-sections`). All frontmatter fields are required:
 
 ```markdown
 ---
@@ -174,7 +177,7 @@ One-paragraph plain-English summary.
 
 When the user asks to "walk through", "run", "show me how to", or "do" a workflow:
 
-1. Read `{wiki.root}workflows/<id>.md` — read `schemas/workflow_meta.json` for the frontmatter structure
+1. Read `{wiki.root}workflows/<id>.md` — read `schemas/workflow.json` for the frontmatter structure
 2. Read `{wiki.root}.state/_progress.json`; for each entry in `prerequisites`, check that concept's `status` field
 3. If any prerequisite is `Not started` or `In progress`: warn — "Before running [[<workflow_id>]], you should finish [[<concept_id>]]. Want me to teach it first?" Wait for the user's choice.
 4. If all prerequisites are `Done`: present the workflow one step at a time
@@ -191,7 +194,7 @@ When the user asks "define X", "what does X mean", "what is X", or "explain the 
 
 1. Check `{wiki.root}terms/<inferred_id>.md` — if it exists, display the definition and its `related_concepts` wikilinks
 2. If not found, check `{wiki.root}concepts/` — if a full concept exists, teach it via the Teaching flow instead
-3. If neither exists: give a one-sentence definition, then offer "Want me to save this as a term node?" — if yes, write `{wiki.root}terms/<id>.md` (read `schemas/term_meta.json` first) and add `[[<term_id>]]` to `index.md` under `## Terms`
+3. If neither exists: give a one-sentence definition, then offer "Want me to save this as a term node?" — if yes, write `{wiki.root}terms/<id>.md` (read `schemas/term.json` first) and add `[[<term_id>]]` to `index.md` under `## Terms`
 4. If the term surfaced during a teaching session, link it inline in the concept body without prompting
 
 ## Ingest
@@ -234,7 +237,7 @@ Map the source to the workflow's `sources` array in addition to any concept `sou
 ### Step 2b — Extract terms
 1. Scan the source for defined vocabulary: glossary entries, acronyms, domain terms introduced with a formal definition marker ("is", "refers to", "means")
 2. For each candidate term:
-   - If `{wiki.root}terms/<id>.md` **exists**: add `[[<source_id>]]` to its `sources` array (read `schemas/term_meta.json` first)
+   - If `{wiki.root}terms/<id>.md` **exists**: add `[[<source_id>]]` to its `sources` array (read `schemas/term.json` first)
    - If it **does not exist**: include in the Step 2 mapping confirmation — "I also found these new terms: [X, Y]. Should I create term nodes for them?"
 3. Wait for confirmation before creating any new term node
 4. Add confirmed term IDs as `[[wikilinks]]` to the `terms` array in the source node (Step 4)
@@ -249,7 +252,7 @@ For each matched concept:
 - Link any new split files from `<id>.md`
 
 ### Step 4 — Create source node
-Write `{wiki.root}sources/<id>.md` — read `schemas/source_meta.json` first. Use `[[wikilinks]]` for `author` and `concepts` fields.
+Write `{wiki.root}sources/<id>.md` — read `schemas/source.json` first. Use `[[wikilinks]]` for `author` and `concepts` fields.
 
 ### Step 5 — Update author node
 Check `{wiki.root}authors/<author_id>.md`:
@@ -344,20 +347,22 @@ Append to `{wiki.root}.state/_log.json`:
 
 Before writing or updating **any** node file:
 
-1. Read the relevant `schemas/<type>_meta.json`
+1. Read the relevant `schemas/<type>.json`
 2. Build YAML frontmatter from its `properties` — required fields must be present; optional fields only if you have the data
-3. Read `x-body-sections` (if present) — render each `##` heading in listed order as the file body:
-   - `"ingest": "write once"` — write on creation; never overwrite on re-ingest
-   - `"ingest": "append new bullets; never duplicate"` — add new bullet items below existing ones
-   - `"ingest": "append paragraphs; preserve existing text"` — append below existing content, never clobber
-4. Schemas with **no** `x-body-sections` (e.g. `term_meta.json`) produce frontmatter-only files
+3. If `x-body-sections` is present, it contains `{ "$ref": "content/<type>.json" }` — read that file to get the body structure:
+   - Each property key is a `##` section heading; render them in listed order
+   - The ingest rule is in each property's `description` — follow it literally:
+     - "Write once on creation; do not overwrite" — write on creation only, never touch again on re-ingest
+     - "Append new bullets; never duplicate" — add new items below existing ones, skip exact matches
+     - "Append paragraphs; preserve existing text" — add below existing content, never clobber
+4. Schemas with **no** `x-body-sections` (e.g. `schemas/term.json`) produce frontmatter-only files
 
 This replaces all per-node body-section instructions — the schema is the single source of truth.
 
 ---
 
 ### Source node
-Read `schemas/source_meta.json` before writing. Example:
+Read `schemas/source.json` before writing. Example:
 
 ```markdown
 ---
@@ -386,7 +391,7 @@ One-paragraph summary of the source.
 ```
 
 ### Author node
-Read `schemas/author_meta.json` before writing. Only record opinions the user explicitly states — never infer.
+Read `schemas/author.json` before writing. Only record opinions the user explicitly states — never infer.
 
 ```markdown
 ---
@@ -409,7 +414,7 @@ Great for fundamentals; builds everything from scratch.
 When a new author is encountered and `{ingest.auto_propose_author}` is `true`: "That article is by [Name]. Should I add them to your wiki? If so, what's your take on them?" — wait for confirmation and opinion before writing. If `false`, skip silently.
 
 ### Tool node
-Read `schemas/tool_meta.json` before writing. Only record opinions the user explicitly states.
+Read `schemas/tool.json` before writing. Only record opinions the user explicitly states.
 
 ```markdown
 ---
@@ -456,7 +461,7 @@ Surface stored opinions when relevant: "You marked this as 'avoid' — want to p
 
 ### Workflow node
 
-Read `schemas/workflow_meta.json` before writing. `prerequisites` is a strict subset of `concepts` — only the gates the learner must pass before the workflow is useful.
+Read `schemas/workflow.json` before writing. `prerequisites` is a strict subset of `concepts` — only the gates the learner must pass before the workflow is useful.
 
 ```markdown
 ---
@@ -518,7 +523,7 @@ One-paragraph summary of what this workflow produces.
 
 ### Term node
 
-Read `schemas/term_meta.json` before writing. Example:
+Read `schemas/term.json` before writing. Example:
 
 ```markdown
 ---

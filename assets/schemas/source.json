@@ -1,31 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "source_meta.json",
+  "$id": "source.json",
   "title": "Source Frontmatter",
   "description": "Schema for the YAML frontmatter in every <sources_dir>/<id>.md file",
   "type": "object",
   "required": ["id", "type", "title", "url", "concepts", "date_ingested"],
   "additionalProperties": false,
-  "x-body-sections": {
-    "description": "Markdown body sections expected in every source file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
-    "sections": {
-      "## Summary": {
-        "description": "One-paragraph summary of what the source covers and its key contribution.",
-        "format": "freeform-markdown",
-        "ingest": "write once on creation; do not overwrite"
-      },
-      "## Key concepts covered": {
-        "description": "Bullet list of concepts this source introduces or deepens, with a one-line description of what it adds per concept.",
-        "format": "bullet-list",
-        "ingest": "append new entries; never duplicate"
-      },
-      "## Notes": {
-        "description": "Free-form overflow notes that don't fit a first-class section.",
-        "format": "freeform-markdown",
-        "ingest": "append paragraphs; preserve existing text"
-      }
-    }
-  },
+  "x-body-sections": { "$ref": "content/source.json" },
   "properties": {
     "id": {
       "type": "string",

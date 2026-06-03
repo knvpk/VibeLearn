@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "term_meta.json",
+  "$id": "term.json",
   "title": "Term Frontmatter",
   "description": "Schema for the YAML frontmatter in every <terms_dir>/<id>.md file. Terms are single-definition vocabulary nodes — not full concepts, no progress tracking.",
   "type": "object",

@@ -1,31 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "workflow_meta.json",
+  "$id": "workflow.json",
   "title": "Workflow Frontmatter",
   "description": "Schema for the YAML frontmatter in every <workflows_dir>/<id>.md file. Workflows answer 'how do I execute Y' — they are procedural, prerequisite-gated, and distinct from concepts which answer 'what is X'.",
   "type": "object",
   "required": ["id", "name", "description", "status", "prerequisites", "concepts", "tools", "sources", "created_at"],
   "additionalProperties": false,
-  "x-body-sections": {
-    "description": "Markdown body sections expected in every workflow file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
-    "sections": {
-      "## Steps": {
-        "description": "The numbered step-by-step procedure. Each step has a goal, optional code block, and a checkpoint question.",
-        "format": "freeform-markdown",
-        "ingest": "append new steps; preserve existing steps"
-      },
-      "## From sources": {
-        "description": "One line per source wikilink that informed this workflow, describing what it contributed.",
-        "format": "bullet-list",
-        "ingest": "append new entries; never duplicate"
-      },
-      "## Notes": {
-        "description": "Free-form overflow notes that don't fit a first-class section.",
-        "format": "freeform-markdown",
-        "ingest": "append paragraphs; preserve existing text"
-      }
-    }
-  },
+  "x-body-sections": { "$ref": "content/workflow.json" },
   "properties": {
     "id": {
       "type": "string",
