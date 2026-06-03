@@ -6,6 +6,26 @@
   "type": "object",
   "required": ["id", "name", "description", "related_concepts", "tags", "sources"],
   "additionalProperties": false,
+  "x-body-sections": {
+    "description": "Markdown body sections expected in every concept file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
+    "sections": {
+      "## Key Takeaways": {
+        "description": "Bullet list of the most important things to understand about this concept.",
+        "format": "bullet-list",
+        "ingest": "append new bullets; never duplicate"
+      },
+      "## From sources": {
+        "description": "One line per source wikilink that contributed to this concept, describing what it added.",
+        "format": "bullet-list",
+        "ingest": "append new entries; never duplicate"
+      },
+      "## Notes": {
+        "description": "Free-form overflow notes that don't fit a first-class section.",
+        "format": "freeform-markdown",
+        "ingest": "append paragraphs; preserve existing text"
+      }
+    }
+  },
   "properties": {
     "id": {
       "type": "string",
@@ -48,13 +68,6 @@
       "description": "[[wikilink]] references to workflow nodes that list this concept as a prerequisite. Optional — populated when a workflow is created that gates on this concept.",
       "items": { "type": "string" },
       "uniqueItems": true
-    },
-    "notes": {
-      "description": "Free-form notes or overflow metadata that doesn't fit a first-class field",
-      "oneOf": [
-        { "type": "string" },
-        { "type": "null" }
-      ]
     }
   }
 }

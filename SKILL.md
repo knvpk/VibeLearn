@@ -132,7 +132,7 @@ When the user says "next topic", "what's next", "continue", etc.:
 
 ## concept <id>.md structure
 
-Read `schemas/concept_meta.json` before writing. All fields are required:
+Read `schemas/concept_meta.json` before writing. Apply the schema-driven structure rule (frontmatter from `properties`, body from `x-body-sections`). All frontmatter fields are required:
 
 ```markdown
 ---
@@ -205,7 +205,18 @@ When the user provides a URL, article, paper, or any external source:
 4. Ask: "This covers [X, Y, Z]. Should I map these to the wiki?"
 5. Wait for confirmation before proceeding
 
-### Step 1b — Detect procedural sources
+### Step 1b — Detect tool URLs (GitHub / GitLab / package registry)
+If the URL's hostname is `github.com`, `gitlab.com`, `crates.io`, `pypi.org`, `npmjs.com`, or similar (a repository or package page, not an article or docs site), treat it as a **tool ingest**, not a concept ingest:
+1. Infer `id` from the repo/package name (snake_case)
+2. Check `{wiki.root}tools/<id>.md`:
+   - If it **exists**: read it, add the URL to its `sources` array if not already present, update `language` and `docker` if newly discovered, then stop — do **not** proceed to Steps 2–5
+   - If it **does not exist**: propose a new tool node (show the draft frontmatter) and ask for confirmation; on confirmation write the file and stop
+3. Add the ingest URL to `sources` (not `url`); only set `url` to an official docs/homepage if one is clearly stated in the repo README
+4. Detect `language` from the repo's primary language badge or `languages.yml`; detect `docker` from the presence of a `Dockerfile`, `docker-compose.yml`, or Docker Hub mention
+5. Skip Steps 2–5 entirely — tool ingests do **not** auto-create or update concept nodes
+6. Append to log: `{ "date": "…", "operation": "ingest", "title": "<repo name>", "tool": "<tool_id>", "concepts_updated": [] }`
+
+### Step 1c — Detect procedural sources
 If `{ingest.detect_workflows}` is not `never` and the source is a how-to, tutorial, recipe, or implementation guide: if `{ingest.detect_workflows}` is `ask`, prompt "This source describes a process — should I create or update a workflow node for it?" and wait for confirmation; if `always`, proceed directly. After confirmation or on `always`, check `{wiki.root}workflows/` for an existing match:
 - If a matching workflow exists: enrich its `sources` array and steps
 - If none exists: propose a new workflow node with the suggested ID and prerequisites — ask before creating
@@ -329,6 +340,22 @@ Append to `{wiki.root}.state/_log.json`:
 
 ## Node file structures
 
+### Schema-driven structure (all node types)
+
+Before writing or updating **any** node file:
+
+1. Read the relevant `schemas/<type>_meta.json`
+2. Build YAML frontmatter from its `properties` — required fields must be present; optional fields only if you have the data
+3. Read `x-body-sections` (if present) — render each `##` heading in listed order as the file body:
+   - `"ingest": "write once"` — write on creation; never overwrite on re-ingest
+   - `"ingest": "append new bullets; never duplicate"` — add new bullet items below existing ones
+   - `"ingest": "append paragraphs; preserve existing text"` — append below existing content, never clobber
+4. Schemas with **no** `x-body-sections` (e.g. `term_meta.json`) produce frontmatter-only files
+
+This replaces all per-node body-section instructions — the schema is the single source of truth.
+
+---
+
 ### Source node
 Read `schemas/source_meta.json` before writing. Example:
 
@@ -354,6 +381,8 @@ One-paragraph summary of the source.
 ## Key concepts covered
 - Concept 1 — what the source adds
 - Concept 2 — what the source adds
+
+## Notes
 ```
 
 ### Author node
@@ -371,8 +400,10 @@ expertise:
 sources:
   - "[[karpathy_makemore_2023]]"
 verdict: recommended
-notes: "Great for fundamentals; builds everything from scratch."
 ---
+
+## Notes
+Great for fundamentals; builds everything from scratch.
 ```
 
 When a new author is encountered and `{ingest.auto_propose_author}` is `true`: "That article is by [Name]. Should I add them to your wiki? If so, what's your take on them?" — wait for confirmation and opinion before writing. If `false`, skip silently.
@@ -386,17 +417,40 @@ id: pytorch
 name: "PyTorch"
 category: framework
 url: https://pytorch.org
+sources:
+  - "https://github.com/pytorch/pytorch"
+  - "https://pytorch.org/docs/"
+language: "Python"
+docker: true
+cloud: false
+platform: ["linux", "macos", "windows"]
+license: "BSD-3-Clause"
+version: "2.3.0"
+last_checked: 2026-06-03
+maturity: mature
+install: "pip install torch"
+alternatives:
+  - "[[tensorflow]]"
+  - "[[jax]]"
+tags:
+  - deep-learning
+  - training
 description: "Deep learning framework with dynamic computation graphs."
 concepts:
   - "[[neural_networks]]"
   - "[[backprop]]"
 verdict: recommended
-pros:
-  - "Pythonic API"
-cons: []
-notes: null
 ---
+
+## Pros
+- Pythonic API
+
+## Cons
+
+## Notes
 ```
+
+`sources` holds every URL known for the tool — the ingest URL goes here, not in `url`. `url` is reserved for the canonical homepage/docs. `language` can be a single string or a list. `docker` is `true`, `false`, or `null` (unknown).
 
 Surface stored opinions when relevant: "You marked this as 'avoid' — want to proceed anyway?" Only prompt once per session per new tool.
 
@@ -430,7 +484,6 @@ tags:
   - rag
 difficulty: intermediate
 estimated_time: "2–4 hours"
-notes: true
 created_at: 2026-05-15
 last_updated: 2026-05-20
 ---
@@ -459,6 +512,8 @@ One-paragraph summary of what this workflow produces.
 
 ## From sources
 - [[langchain_rag_docs_2024]] — official RAG implementation guide
+
+## Notes
 ```
 
 ### Term node

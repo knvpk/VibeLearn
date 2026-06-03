@@ -6,6 +6,16 @@
   "type": "object",
   "required": ["id", "name"],
   "additionalProperties": false,
+  "x-body-sections": {
+    "description": "Markdown body sections expected in every author file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
+    "sections": {
+      "## Notes": {
+        "description": "Free-form opinion or observations recorded verbatim from the user.",
+        "format": "freeform-markdown",
+        "ingest": "append paragraphs; preserve existing text"
+      }
+    }
+  },
   "properties": {
     "id": {
       "type": "string",
@@ -53,13 +63,6 @@
       "description": "User's overall recommendation — only set from explicit user opinion, never inferred",
       "oneOf": [
         { "type": "string", "enum": ["recommended", "neutral", "avoid"] },
-        { "type": "null" }
-      ]
-    },
-    "notes": {
-      "description": "Free-form opinion recorded verbatim from the user",
-      "oneOf": [
-        { "type": "string" },
         { "type": "null" }
       ]
     }
