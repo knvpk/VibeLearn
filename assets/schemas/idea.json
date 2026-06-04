@@ -4,12 +4,13 @@
   "title": "Idea Frontmatter",
   "description": "Schema for the YAML frontmatter in every <ideas_dir>/<id>/<id>.md file. Raw or evolving thoughts that may be promoted to a concept, workflow, or project.",
   "type": "object",
-  "required": ["id", "title", "status", "created_at", "tags", "category"],
+  "required": ["id", "collection", "title", "status", "created_at", "tags", "category"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/idea.json" },
   "examples": [
     {
       "id": "spaced_repetition_ui",
+      "collection": "idea",
       "title": "Spaced Repetition UI",
       "status": "exploring",
       "created_at": "2026-06-03",
@@ -23,12 +24,17 @@
       "motivation": "Surface due-review concepts in a dedicated UI panel so the learner never misses a review date."
     }
   ],
-  "x-file-example": "---\nid: spaced_repetition_ui\ntitle: \"Spaced Repetition UI\"\nstatus: exploring\ncreated_at: 2026-06-03\ncategory: tooling\npriority: medium\ntags:\n  - ux\n  - review\nrelated_concepts:\n  - \"[[spaced_repetition]]\"\nrelated_ideas: []\nsources: []\neffort: medium\nmotivation: \"Surface due-review concepts in a dedicated UI panel so the learner never misses a review date.\"\n---\n\n## Description\nA lightweight sidebar or dashboard that surfaces concepts whose `review_due` date has passed, letting the learner kick off a review session in one click.\n\n## Problem\n- review_due dates exist in _progress.json but the learner must remember to check them manually\n\n## Approach\n- Read _progress.json on startup; filter concepts where review_due ≤ today\n- Render a sorted list with concept name, days overdue, and a \"Review now\" button\n\n## Open Questions\n- Should this be a separate command or part of the existing progress report?\n\n## Notes\n",
+  "x-file-example": "---\nid: spaced_repetition_ui\ncollection: idea\ntitle: \"Spaced Repetition UI\"\nstatus: exploring\ncreated_at: 2026-06-03\ncategory: tooling\npriority: medium\ntags:\n  - ux\n  - review\nrelated_concepts:\n  - \"[[spaced_repetition]]\"\nrelated_ideas: []\nsources: []\neffort: medium\nmotivation: \"Surface due-review concepts in a dedicated UI panel so the learner never misses a review date.\"\n---\n\n## Description\nA lightweight sidebar or dashboard that surfaces concepts whose `review_due` date has passed, letting the learner kick off a review session in one click.\n\n## Problem\n- review_due dates exist in _progress.json but the learner must remember to check them manually\n\n## Approach\n- Read _progress.json on startup; filter concepts where review_due ≤ today\n- Render a sorted list with concept name, days overdue, and a \"Review now\" button\n\n## Open Questions\n- Should this be a separate command or part of the existing progress report?\n\n## Notes\n",
   "properties": {
     "id": {
       "type": "string",
       "description": "Snake_case ID matching the folder name under ideas_dir",
       "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "idea",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
     },
     "title": {
       "type": "string",

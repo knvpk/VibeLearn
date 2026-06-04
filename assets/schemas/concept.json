@@ -4,24 +4,30 @@
   "title": "Concept Frontmatter",
   "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/<id>.md file. Content only — progress state lives in .state/_progress.json.",
   "type": "object",
-  "required": ["id", "name", "related_concepts", "tags", "sources"],
+  "required": ["id", "collection", "name", "related_concepts", "tags", "sources"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/concept.json" },
   "examples": [
     {
       "id": "transformer_architecture",
+      "collection": "concept",
       "name": "Transformer Architecture",
       "related_concepts": ["[[attention_mechanism]]", "[[positional_encoding]]"],
       "tags": ["architecture", "deep-learning"],
       "sources": ["[[karpathy_makemore_2023]]"]
     }
   ],
-  "x-file-example": "---\nid: transformer_architecture\nname: \"Transformer Architecture\"\nrelated_concepts:\n  - \"[[attention_mechanism]]\"\n  - \"[[positional_encoding]]\"\ntags:\n  - architecture\n  - deep-learning\nsources:\n  - \"[[karpathy_makemore_2023]]\"\n---\n\n# Transformer Architecture\n\n## Description\nOne-sentence plain-English summary.\n\n## Contents\n- [How it works](transformer_architecture_internals.md)\n- [Examples](transformer_architecture_examples.md)\n- [Patterns & pitfalls](transformer_architecture_patterns.md)\n\n## Key Takeaways\n- Bullet 1\n- Bullet 2\n\n## From sources\n- [[karpathy_makemore_2023]] — explains attention intuitively via bigram models\n",
+  "x-file-example": "---\nid: transformer_architecture\ncollection: concept\nname: \"Transformer Architecture\"\nrelated_concepts:\n  - \"[[attention_mechanism]]\"\n  - \"[[positional_encoding]]\"\ntags:\n  - architecture\n  - deep-learning\nsources:\n  - \"[[karpathy_makemore_2023]]\"\n---\n\n# Transformer Architecture\n\n## Description\nOne-sentence plain-English summary.\n\n## Contents\n- [How it works](transformer_architecture_internals.md)\n- [Examples](transformer_architecture_examples.md)\n- [Patterns & pitfalls](transformer_architecture_patterns.md)\n\n## Key Takeaways\n- Bullet 1\n- Bullet 2\n\n## From sources\n- [[karpathy_makemore_2023]] — explains attention intuitively via bigram models\n",
   "properties": {
     "id": {
       "type": "string",
       "description": "Snake_case ID matching the folder name under concepts_dir and the entry in index.md",
       "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "concept",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
     },
     "name": {
       "type": "string",
