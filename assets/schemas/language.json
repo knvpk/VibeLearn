@@ -42,6 +42,20 @@
       "description": "How source code is turned into running instructions — interpreted (runtime eval), compiled (ahead-of-time native binary), bytecode (compiled to VM bytecode, e.g. JVM/CLR), or transpiled (compiled to another high-level language)",
       "enum": ["interpreted", "compiled", "bytecode", "transpiled"]
     },
+    "case_sensitive": {
+      "description": "Whether the language is case-sensitive (identifiers foo vs Foo are distinct)",
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "null" }
+      ]
+    },
+    "indentation": {
+      "description": "Whether indentation is syntactically significant (true for Python/YAML, false for most others)",
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "null" }
+      ]
+    },
     "package_managers": {
       "description": "Package managers available for this language, in order of prevalence",
       "oneOf": [

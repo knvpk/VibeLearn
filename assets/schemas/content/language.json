@@ -25,6 +25,60 @@
       "type": "array",
       "items": { "type": "string" },
       "description": "Free-form observations recorded verbatim from the user. Append paragraphs; preserve existing text."
+    },
+    "## Data Types": {
+      "type": "array",
+      "description": "Primitive and object types with mutability noted. Append new types; never duplicate.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Type name, e.g. int, str, list" },
+          "kind": { "type": "string", "description": "primitive or object" },
+          "mutable": { "type": "boolean" }
+        }
+      }
+    },
+    "## Operators": {
+      "type": "array",
+      "description": "Language operators with symbol, name, category, and a usage example. Append; never duplicate.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "symbol": { "type": "string", "description": "Operator symbol, e.g. +, **, :=" },
+          "name": { "type": "string", "description": "Human name, e.g. Addition, Walrus" },
+          "type": { "type": "string", "description": "Category, e.g. arithmetic, comparison, logical, assignment" },
+          "example": { "type": "string", "description": "Short usage snippet" }
+        }
+      }
+    },
+    "## Comment Types": {
+      "type": "array",
+      "description": "Comment syntaxes supported by the language. Append; never duplicate.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "e.g. single-line, multi-line, docstring" },
+          "syntax": { "type": "string", "description": "Exact syntax, e.g. # or /* ... */" },
+          "example": { "type": "string" }
+        }
+      }
+    },
+    "## Trick Questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "Gotchas, surprising behaviors, and common mistakes. Append new items; never duplicate."
+    },
+    "## Built-ins": {
+      "type": "array",
+      "description": "Standard library / built-in capabilities — maps a concept to the function or namespace that provides it. Append; never duplicate.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "concept": { "type": "string", "description": "Capability name, e.g. temp_file_creation, sorted_map, regex" },
+          "func_name": { "type": "string", "description": "Function or namespace, e.g. tempfile.NamedTemporaryFile" }
+        }
+      }
     }
   },
   "additionalProperties": false
