@@ -5,6 +5,10 @@
   "description": "Markdown body sections expected in every workflow file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
   "type": "object",
   "properties": {
+    "## Description": {
+      "type": "string",
+      "description": "One-sentence plain-English summary of what this workflow accomplishes."
+    },
     "## Steps": {
       "type": "array",
       "items": { "type": "string" },

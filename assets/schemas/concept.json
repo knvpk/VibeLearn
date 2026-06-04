@@ -4,7 +4,7 @@
   "title": "Concept Frontmatter",
   "description": "Schema for the YAML frontmatter in every <concepts_dir>/<id>/<id>.md file. Content only — progress state lives in .state/_progress.json.",
   "type": "object",
-  "required": ["id", "name", "description", "related_concepts", "tags", "sources"],
+  "required": ["id", "name", "related_concepts", "tags", "sources"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/concept.json" },
   "properties": {
@@ -16,10 +16,6 @@
     "name": {
       "type": "string",
       "description": "Human-readable concept name"
-    },
-    "description": {
-      "type": "string",
-      "description": "One-sentence plain-English summary of what this concept is"
     },
     "related_concepts": {
       "type": "array",

@@ -124,13 +124,6 @@
       "items": { "type": "string" },
       "uniqueItems": true
     },
-    "description": {
-      "description": "One-to-two sentence description of what the tool does",
-      "oneOf": [
-        { "type": "string" },
-        { "type": "null" }
-      ]
-    },
     "concepts": {
       "type": "array",
       "description": "[[wikilink]] references to curriculum concepts this tool relates to",
