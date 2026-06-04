@@ -48,6 +48,7 @@ Print this reference and nothing else:
 
 ### Ingest
   <URL or paste article text>             → fetch, summarize, map to wiki, confirm
+  <multiple URLs / collection>            → batch ingest: fetch all, merge into wiki
 
 ### Review & Status
   how am I doing / progress / stats       → phase-by-phase progress summary
@@ -69,10 +70,10 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 
 Schema paths are hardcoded — never read from config:
-`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`
+`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`
 
 Body-section schemas (resolved via `$ref` from each top-level schema):
-`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`
+`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`
 
 Then derive the state directory (hardcoded, not in config):
 - `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
@@ -97,6 +98,7 @@ Three content layers:
 - Terms: `{wiki.root}terms/<id>.md` — single-sentence vocabulary definitions, wikilink-able from any node
 - Workflows: `{wiki.root}workflows/<id>.md` — procedural step-by-step guides, prerequisite-gated by concept status
 - Ideas: `{wiki.root}ideas/<id>.md` — raw or evolving thoughts that may be promoted to a concept, workflow, or project
+- Collections: `{wiki.root}collections/<id>.md` — named groups of source URLs ingested together; aggregates source and concept nodes across all items
 
 **Navigation files**:
 - `{wiki.root}index.md` — full concept map with `[[wikilinks]]`, organized by phase, plus a `## Terms` section listing all term IDs. The LLM reads this to check what exists and navigate the graph.
@@ -177,7 +179,16 @@ When the user provides a URL, article, paper, or any external source:
 4. Ask: "This covers [X, Y, Z]. Should I map these to the wiki?"
 5. Wait for confirmation before proceeding
 
-### Step 1b — Detect tool URLs (GitHub / GitLab / package registry)
+### Step 1b — Detect catalog URLs (awesome lists, RSS/Atom feeds, link indexes)
+Run this check **before** Steps 1c and 1d. A URL is a catalog if any of these signals are present:
+
+- **Awesome list**: `github.com` or `gitlab.com` repo whose name starts with `awesome-`, or whose README contains ≥ 10 Markdown list-links of the pattern `- [Name](url)`
+- **RSS / Atom feed**: response `Content-Type` is `application/rss+xml`, `application/atom+xml`, or the response body starts with `<rss` / `<feed `
+- **HTML link index**: non-repository page where ≥ 15 distinct external links appear inside `<li>` / `<ul>` elements (e.g. newsletters, curated blog indexes, documentation landing pages)
+
+If a catalog is detected, go to **Ingest a catalog** below. Do **not** proceed to Steps 1c–6.
+
+### Step 1c — Detect tool URLs (GitHub / GitLab / package registry)
 If the URL's hostname is `github.com`, `gitlab.com`, `crates.io`, `pypi.org`, `npmjs.com`, or similar (a repository or package page, not an article or docs site), treat it as a **tool ingest**, not a concept ingest:
 1. Infer `id` from the repo/package name (snake_case)
 2. Check `{wiki.root}tools/<id>.md`:
@@ -188,11 +199,18 @@ If the URL's hostname is `github.com`, `gitlab.com`, `crates.io`, `pypi.org`, `n
 5. Skip Steps 2–5 entirely — tool ingests do **not** auto-create or update concept nodes
 6. Append to log: `{ "date": "…", "operation": "ingest", "title": "<repo name>", "tool": "<tool_id>", "concepts_updated": [] }`
 
-### Step 1c — Detect procedural sources
+
+
+### Step 1d — Detect procedural sources
 If `{ingest.detect_workflows}` is not `never` and the source is a how-to, tutorial, recipe, or implementation guide: if `{ingest.detect_workflows}` is `ask`, prompt "This source describes a process — should I create or update a workflow node for it?" and wait for confirmation; if `always`, proceed directly. After confirmation or on `always`, check `{wiki.root}workflows/` for an existing match:
 - If a matching workflow exists: enrich its `sources` array and steps
 - If none exists: propose a new workflow node with the suggested ID and prerequisites — ask before creating
 Map the source to the workflow's `sources` array in addition to any concept `sources` arrays.
+
+### Step 1e — Detect multiple URLs (manual collection ingest)
+If the user provides **two or more URLs at once** (in a single message, as a newline-separated list, or as a named reading list), treat it as a **collection ingest** — go to **Ingest a collection** below instead of running Steps 1–6 per URL independently.
+
+Also trigger manual collection ingest if the user provides a `[[collection_id]]` wikilink or a path to an existing `{wiki.root}collections/<id>.md` file.
 
 ### Step 2 — Map to existing concepts
 1. Read `{wiki.root}index.md` to find best-fit concepts
@@ -238,6 +256,119 @@ Append to `{wiki.root}.state/_log.json`:
 - Never update concept pages without showing the mapping and getting confirmation
 - If URL is inaccessible, report clearly and offer `WebSearch` for the topic instead
 - If source covers more than `{ingest.max_concepts_before_ask}` distinct concepts, ask which to prioritize
+
+## Ingest a catalog
+
+When a single URL is identified as a catalog in Step 1b (awesome list, RSS/Atom feed, or HTML link index):
+
+### Step CX1 — Parse the catalog
+`WebFetch` the catalog URL and extract all links using the strategy for its `catalog_type`:
+
+- **awesome-list**: parse the README markdown; extract every `- [Name](url)` link. Group by the README's `##` section headings (e.g. "Packages", "Articles", "Videos", "Tools").
+- **rss / atom**: parse `<item>` or `<entry>` elements; extract `<title>` and `<link>` (or `<id>`). Group by `<category>` if present, otherwise list chronologically.
+- **html-index**: extract `<a href>` links inside `<li>` elements; infer group labels from nearest `<h2>`/`<h3>` ancestors.
+
+Deduplicate links. Skip anchor-only links (`#...`), the catalog's own URL, and any link already in `{wiki.root}sources/` or `{wiki.root}tools/`.
+
+### Step CX2 — Present the link list for selection
+Show the extracted links grouped by category. If the total exceeds 20, paginate (20 per page) and offer "show more":
+
+```
+Found 47 items in "Awesome Laravel":
+
+**Packages** (23 items)
+ 1. Laravel Debugbar — https://github.com/barryvdh/laravel-debugbar
+ 2. Spatie Laravel Permission — https://github.com/spatie/laravel-permission
+ …
+
+**Articles** (14 items)
+24. "Understanding Laravel's Service Container" — https://laravel-news.com/…
+…
+
+Select items to ingest:
+  all · by number (e.g. 1,3,5-10) · by section (e.g. "Packages") · skip
+```
+
+Wait for the user's selection. If they say "all", confirm item count before proceeding — "That's 47 items. Some may take a while. Confirm?"
+
+### Step CX3 — Process selected items
+For each selected item, run the standard ingest checks in order:
+1. **Step 1c** (tool detection) — GitHub/registry URLs go to tool ingest
+2. **Step 1d** (workflow detection) — how-to sources go to workflow ingest
+3. **Steps 2–5** (concept mapping, term extraction, enrichment, source node, author node) — all other URLs
+
+Each item produces its own node. Keep a running list of all `source_id` and `tool_id` values created or updated, and all `concept_id` values touched.
+
+If any item is inaccessible, note it and continue — report failed items at the end.
+
+### Step CX4 — Write the collection node
+Read `schemas/collection.json` and `schemas/content/collection.json`.
+
+If `{wiki.root}collections/<id>.md` **does not exist**:
+- Infer `id` from the catalog title (snake_case)
+- Write the node with:
+  - `catalog_url` — the original catalog URL
+  - `catalog_type` — detected type (`awesome-list`, `rss`, `atom`, `html-index`)
+  - `items` — URLs of **selected** items only (not the full extracted list)
+  - `sources` — `[[wikilinks]]` to every source/tool node created or updated
+  - `concepts` — deduplicated `[[wikilinks]]` to every concept touched
+  - `date_ingested` — today
+
+If it **already exists** (re-ingest or adding more items from the same catalog): append new `items`, `sources`, and `concepts` entries (no duplicates); append new entries to `## Sources` and `## Key concepts covered`.
+
+### Step CX5 — Append to log
+```json
+{ "date": "<ISO date>", "operation": "ingest_catalog", "collection": "<collection_id>", "catalog_type": "<type>", "items_selected": 12, "items_failed": 1, "sources_created": ["s1", "s2"], "tools_created": ["t1"], "concepts_updated": ["c1", "c2"] }
+```
+
+---
+
+## Ingest a manual collection
+
+When the user provides multiple URLs at once (Step 1e), references a `[[collection_id]]`, or asks to ingest a named reading list:
+
+### Step C1 — Identify items
+Collect the URLs into an ordered list. If a `{wiki.root}collections/<id>.md` already exists, read it and extract `items` from its frontmatter. Present the list:
+```
+I found N items to ingest:
+1. <url>
+2. …
+Should I fetch and map all of them to the wiki?
+```
+Wait for confirmation.
+
+### Step C2 — Batch fetch and summarize
+For each item:
+1. If a URL not yet ingested: `WebFetch` it and extract title, concepts, and a one-sentence summary
+2. If already a `[[source_id]]` wikilink: read its existing node — skip refetching
+3. Collect all proposed concept mappings across every item
+
+Show a consolidated mapping before writing anything:
+```
+Here's what I'll update across all N sources:
+
+Concepts to enrich: [[concept_a]], [[concept_b]]
+New concepts to create: [[concept_c]] (Phase 2)
+New terms found: X, Y
+
+Does that work, or do you want to exclude any items?
+```
+Wait for confirmation. If total new concepts exceed `{ingest.max_concepts_before_ask}`, ask which to prioritize.
+
+### Step C3 — Process each item
+For each confirmed item, run Steps 1c–5 (tool detection, workflow detection, concept mapping, term extraction, enrichment, source node, author node). Each item produces its own node.
+
+### Step C4 — Write the collection node
+Read `schemas/collection.json` and `schemas/content/collection.json`.
+
+If `{wiki.root}collections/<id>.md` **does not exist**: infer `id` from a user-supplied title or ask. Write with `catalog_type: manual`, `items`, `sources`, `concepts`, `date_ingested`.
+
+If it **already exists**: append new entries to `items`, `sources`, `concepts`, `## Sources`, `## Key concepts covered` (no duplicates).
+
+### Step C5 — Append to log
+```json
+{ "date": "<ISO date>", "operation": "ingest_collection", "collection": "<collection_id>", "catalog_type": "manual", "items_processed": 3, "sources_created": ["s1", "s2"], "concepts_updated": ["c1", "c2"] }
+```
 
 ## Query
 
@@ -288,7 +419,7 @@ When the user asks to "lint" or "health check" the wiki:
 
 1. Scan `{wiki.root}concepts/` — collect all concept IDs (folder names)
 2. Read `{wiki.root}index.md` — collect all IDs listed in both concept and workflow sections
-3. Scan `{wiki.root}sources/`, `{wiki.root}authors/`, `{wiki.root}tools/`, `{wiki.root}workflows/`, `{wiki.root}ideas/` — collect all node IDs
+3. Scan `{wiki.root}sources/`, `{wiki.root}authors/`, `{wiki.root}tools/`, `{wiki.root}workflows/`, `{wiki.root}ideas/`, `{wiki.root}collections/` — collect all node IDs
 4. Read `{wiki.root}.state/_progress.json` and `{wiki.root}.state/_plan.json`. Check for:
    - Concept folders that exist but are not listed in `_plan.json` (orphan folders)
    - Concepts listed in `_plan.json` with no folder (stubs)
@@ -304,6 +435,9 @@ When the user asks to "lint" or "health check" the wiki:
    - Term nodes with an empty `related_concepts` array (isolated terms with no bridge to the curriculum)
    - Idea nodes with `status: promoted` but no `promoted_to` set (broken promotion link)
    - Idea nodes with `promoted_to` pointing to a concept or workflow that doesn't exist (dangling promotion link)
+   - Collection nodes whose `sources` array references a source ID with no matching file in `{wiki.root}sources/` (dangling collection source)
+   - Collection nodes whose `items` list contains URLs with no matching `[[source_id]]` in their `sources` array (un-ingested collection items) — surface as: "[[<collection_id>]] has un-ingested items. Want to run a collection ingest?"
+   - Collection nodes with an empty `concepts` array (collection not yet linked to the curriculum)
 5. Report findings as a numbered checklist
 6. Ask: "Want me to fix any of these?"
 
@@ -338,6 +472,8 @@ The schema is the single source of truth for structure and examples.
 **Idea**: When `status` changes to `promoted`, set `promoted_to` to the `[[wikilink]]` of the concept or workflow it became. When creating a concept or workflow directly from an idea, also back-link by setting `promoted_to` on the idea node. Never delete an idea node — set `status: shelved` instead.
 
 **Workflow**: `prerequisites` must be a strict subset of `concepts` — only the gates the learner must have at status Done before the workflow is useful.
+
+**Collection**: Two kinds — catalog (parsed from a single list URL) and manual (user-supplied URLs). `sources` is populated automatically during ingest — never hand-edit it. `items` records only the URLs **selected for ingest**, not every link extracted from the catalog. `catalog_url` preserves the original list URL. When re-ingesting (e.g. user selects more items from the same catalog), fetch only the new selections — skip any URL already present in `items`.
 
 **Term**: Frontmatter-only file — no body sections. Never duplicate — check `{wiki.root}index.md` under `## Terms` before creating.
 
