@@ -5,6 +5,10 @@
   "description": "Markdown body sections expected in every concept file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
   "type": "object",
   "properties": {
+    "## Description": {
+      "type": "string",
+      "description": "One-sentence plain-English summary of what this concept is."
+    },
     "## Key Takeaways": {
       "type": "array",
       "items": { "type": "string" },

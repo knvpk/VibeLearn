@@ -142,7 +142,6 @@ Read `schemas/concept.json` before writing. Apply the schema-driven structure ru
 ---
 id: transformer_architecture
 name: "Transformer Architecture"
-description: "One-sentence plain-English summary."
 related_concepts:
   - "[[attention_mechanism]]"
   - "[[positional_encoding]]"
@@ -154,6 +153,9 @@ sources:
 ---
 
 # Transformer Architecture
+
+## Description
+One-sentence plain-English summary.
 
 One-paragraph plain-English summary.
 
@@ -472,7 +474,6 @@ Read `schemas/workflow.json` before writing. `prerequisites` is a strict subset 
 ---
 id: rag_pipeline
 name: "Build a RAG pipeline"
-description: "Step-by-step guide to building a retrieval-augmented generation system."
 status: ready
 prerequisites:
   - "[[embeddings]]"
@@ -499,6 +500,9 @@ last_updated: 2026-05-20
 ---
 
 # Build a RAG pipeline
+
+## Description
+Step-by-step guide to building a retrieval-augmented generation system.
 
 One-paragraph summary of what this workflow produces.
 
