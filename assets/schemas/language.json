@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "language.json",
+  "title": "Language Frontmatter",
+  "description": "Schema for the YAML frontmatter in every <languages_dir>/<id>.md file",
+  "type": "object",
+  "required": ["id", "collection", "name", "execution"],
+  "additionalProperties": false,
+  "x-body-sections": { "$ref": "content/language.json" },
+  "examples": [
+    {
+      "id": "python",
+      "collection": "language",
+      "name": "Python",
+      "execution": "interpreted",
+      "package_managers": ["pip", "uv", "poetry", "conda"],
+      "bundlers": null,
+      "versions": ["3.11", "3.12", "3.13"],
+      "tools": ["[[pytorch]]", "[[fastapi]]"],
+      "concepts": ["[[dynamic_typing]]", "[[garbage_collection]]"],
+      "tags": ["scripting", "data-science"]
+    }
+  ],
+  "x-file-example": "---\nid: python\ncollection: language\nname: \"Python\"\nexecution: interpreted\npackage_managers:\n  - pip\n  - uv\n  - poetry\n  - conda\nbundlers: null\nversions:\n  - \"3.11\"\n  - \"3.12\"\n  - \"3.13\"\ntools:\n  - \"[[pytorch]]\"\n  - \"[[fastapi]]\"\nconcepts:\n  - \"[[dynamic_typing]]\"\n  - \"[[garbage_collection]]\"\ntags:\n  - scripting\n  - data-science\n---\n\n## Overview\nGeneral-purpose interpreted language known for readability and a vast ecosystem.\n\n## Strengths\n\n## Weaknesses\n\n## Notes\n",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Snake_case ID used as the filename and in [[wikilinks]]",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "language",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the language as it appears in official documentation"
+    },
+    "execution": {
+      "type": "string",
+      "description": "How source code is turned into running instructions — interpreted (runtime eval), compiled (ahead-of-time native binary), bytecode (compiled to VM bytecode, e.g. JVM/CLR), or transpiled (compiled to another high-level language)",
+      "enum": ["interpreted", "compiled", "bytecode", "transpiled"]
+    },
+    "package_managers": {
+      "description": "Package managers available for this language, in order of prevalence",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        { "type": "null" }
+      ]
+    },
+    "bundlers": {
+      "description": "Build/bundle tools used to package or distribute code written in this language (e.g. webpack, vite, rollup, esbuild). Null if the language has no bundling step.",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        { "type": "null" }
+      ]
+    },
+    "versions": {
+      "description": "Notable or currently supported versions, most recent last",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        { "type": "null" }
+      ]
+    },
+    "tools": {
+      "type": "array",
+      "description": "[[wikilink]] references to tool nodes written in or primarily used with this language",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "concepts": {
+      "type": "array",
+      "description": "[[wikilink]] references to curriculum concepts that explain how this language works",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form keywords for cross-cutting themes",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": []
+    }
+  }
+}
