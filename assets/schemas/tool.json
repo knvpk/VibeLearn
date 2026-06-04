@@ -35,14 +35,25 @@
       "items": { "type": "string" },
       "uniqueItems": true
     },
-    "language": {
-      "description": "Primary programming language(s) the tool is written in or targets",
+    "languages": {
+      "description": "Programming languages the tool is written in or targets, each with a name and code coverage percentage",
       "oneOf": [
-        { "type": "string" },
         {
           "type": "array",
-          "items": { "type": "string" },
-          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["name", "code_percentage"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "description": "Programming language name" },
+              "code_percentage": {
+                "type": "number",
+                "description": "Percentage of the codebase written in this language",
+                "minimum": 0,
+                "maximum": 100
+              }
+            }
+          },
           "minItems": 1
         },
         { "type": "null" }
