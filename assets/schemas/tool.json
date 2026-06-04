@@ -46,7 +46,7 @@
       "enum": ["framework", "library", "service", "cli", "database", "other"]
     },
     "url": {
-      "description": "Official homepage or docs URL",
+      "description": "Official homepage or docs URL. Must not duplicate any entry in 'sources'.",
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
@@ -54,7 +54,7 @@
     },
     "sources": {
       "type": "array",
-      "description": "All known URLs for this tool — repo (GitHub/GitLab), docs, blog, etc. The ingest URL lands here when it differs from 'url'.",
+      "description": "All known URLs for this tool — repo (GitHub/GitLab), docs, blog, etc. The ingest URL lands here when it differs from 'url'. Must not contain the value of 'url'.",
       "items": { "type": "string" },
       "uniqueItems": true
     },
