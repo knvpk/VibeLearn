@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "content/collection.json",
+  "title": "Collection Body Sections",
+  "description": "Markdown body sections expected in every collection file. Not frontmatter — populated during batch ingest.",
+  "type": "object",
+  "properties": {
+    "## Description": {
+      "type": "string",
+      "description": "What this collection covers and why these sources are grouped together. Write once on creation; do not overwrite."
+    },
+    "## Sources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "Bullet list of [[source_id]] wikilinks with a one-line description of each item's contribution. Append new entries after each ingest run; never duplicate."
+    },
+    "## Key concepts covered": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "Aggregated bullet list of [[concept_id]] wikilinks touched across all sources, with a one-line summary of what the collection adds to each concept. Append new entries; never duplicate."
+    },
+    "## Notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form notes about the collection as a whole. Append paragraphs; preserve existing text."
+    }
+  },
+  "additionalProperties": false
+}

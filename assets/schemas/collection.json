@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "collection.json",
+  "title": "Collection Frontmatter",
+  "description": "Schema for the YAML frontmatter in every <collections_dir>/<id>.md file. A collection bundles multiple source URLs for batch ingest — all items are fetched, parsed, and merged into the wiki together.",
+  "type": "object",
+  "required": ["id", "collection", "title", "items", "date_ingested"],
+  "additionalProperties": false,
+  "x-body-sections": { "$ref": "content/collection.json" },
+  "examples": [
+    {
+      "id": "transformer_reading_list",
+      "collection": "collection",
+      "title": "Transformer Architecture Reading List",
+      "items": [
+        "https://arxiv.org/abs/1706.03762",
+        "https://jalammar.github.io/illustrated-transformer/",
+        "https://karpathy.ai/zero-to-hero.html"
+      ],
+      "sources": ["[[attention_is_all_you_need]]", "[[illustrated_transformer]]", "[[karpathy_makemore_2023]]"],
+      "concepts": ["[[transformer_architecture]]", "[[attention_mechanism]]", "[[positional_encoding]]"],
+      "date_ingested": "2026-06-04",
+      "tags": ["transformers", "attention", "reading-list"]
+    }
+  ],
+  "x-file-example": "---\nid: transformer_reading_list\ncollection: collection\ntitle: \"Transformer Architecture Reading List\"\nitems:\n  - https://arxiv.org/abs/1706.03762\n  - https://jalammar.github.io/illustrated-transformer/\ndescription: \"Core papers and guides for understanding transformer architecture.\"\nsources:\n  - \"[[attention_is_all_you_need]]\"\n  - \"[[illustrated_transformer]]\"\nconcepts:\n  - \"[[transformer_architecture]]\"\n  - \"[[attention_mechanism]]\"\ndate_ingested: 2026-06-04\ntags:\n  - transformers\n  - reading-list\n---\n\n## Description\nWhat this collection covers and why these sources were grouped together.\n\n## Sources\n- [[attention_is_all_you_need]] — original \"Attention Is All You Need\" paper\n- [[illustrated_transformer]] — visual walkthrough of the transformer architecture\n\n## Key concepts covered\n- [[transformer_architecture]] — core architecture introduced across all items\n- [[attention_mechanism]] — self-attention explained from first principles\n\n## Notes\n",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Snake_case ID used as the filename and in [[wikilinks]]",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "collection",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title for the collection (e.g. 'Transformer Reading List')"
+    },
+    "items": {
+      "type": "array",
+      "description": "Ordered list of URLs to fetch and ingest. May also include [[wikilinks]] to already-ingested source nodes.",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "description": {
+      "description": "One-sentence summary of what this collection covers and why these sources are grouped",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "description": "[[wikilink]] references to source nodes created or updated during ingest of this collection. Populated automatically after ingest.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "concepts": {
+      "type": "array",
+      "description": "Aggregated [[wikilink]] references to all concept nodes touched across all items in this collection. Populated automatically after ingest.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "date_ingested": {
+      "type": "string",
+      "description": "ISO date when this collection was first ingested (YYYY-MM-DD)",
+      "format": "date"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form keywords",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    }
+  }
+}
