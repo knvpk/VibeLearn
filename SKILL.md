@@ -321,7 +321,10 @@ Before writing or updating **any** node file:
 1. Read the relevant `schemas/<type>.json`
 2. Build YAML frontmatter from its `properties` — required fields must be present; optional fields only if you have the data
 3. Use `x-file-example` in the schema as the full rendering template
-4. If `x-body-sections` is present, read the referenced `content/<type>.json` for section order and per-section ingest rules (in each property's `description`) — follow them literally
+4. If `x-body-sections` is present, read the referenced `content/<type>.json` for section order and per-section ingest rules (in each property's `description`) — follow them literally:
+   - "Write once on creation; do not overwrite" — write on creation only, never touch again on re-ingest
+   - "Append new bullets; never duplicate" — add new items below existing ones, skip exact matches
+   - "Append paragraphs; preserve existing text" — add below existing content, never clobber
 5. Schemas with **no** `x-body-sections` (e.g. `schemas/term.json`) produce frontmatter-only files
 
 The schema is the single source of truth for structure and examples.
@@ -332,7 +335,9 @@ The schema is the single source of truth for structure and examples.
 
 **Tool**: `sources` holds every URL known for the tool — the ingest URL goes here, not in `url`. `url` is reserved for the canonical homepage/docs. Only record `verdict`, `pros`, and `cons` from explicit user opinion, never infer. Surface stored opinions when relevant: "You marked this as 'avoid' — want to proceed anyway?" Prompt once per session per tool.
 
-**Idea**: When `status` changes to `promoted`, set `promoted_to` to the `[[wikilink]]` of the concept or workflow it became. Never delete an idea node — set `status: shelved` instead.
+**Idea**: When `status` changes to `promoted`, set `promoted_to` to the `[[wikilink]]` of the concept or workflow it became. When creating a concept or workflow directly from an idea, also back-link by setting `promoted_to` on the idea node. Never delete an idea node — set `status: shelved` instead.
+
+**Workflow**: `prerequisites` must be a strict subset of `concepts` — only the gates the learner must have at status Done before the workflow is useful.
 
 **Term**: Frontmatter-only file — no body sections. Never duplicate — check `{wiki.root}index.md` under `## Terms` before creating.
 
