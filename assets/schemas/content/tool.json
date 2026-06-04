@@ -5,6 +5,10 @@
   "description": "Markdown body sections expected in every tool file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
   "type": "object",
   "properties": {
+    "## Description": {
+      "type": "string",
+      "description": "One-to-two sentence description of what the tool does."
+    },
     "## Pros": {
       "type": "array",
       "items": { "type": "string" },
