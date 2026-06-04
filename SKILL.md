@@ -443,12 +443,14 @@ alternatives:
 tags:
   - deep-learning
   - training
-description: "Deep learning framework with dynamic computation graphs."
 concepts:
   - "[[neural_networks]]"
   - "[[backprop]]"
 verdict: recommended
 ---
+
+## Description
+Deep learning framework with dynamic computation graphs.
 
 ## Pros
 - Pythonic API
