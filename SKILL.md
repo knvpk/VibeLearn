@@ -136,41 +136,7 @@ When the user says "next topic", "what's next", "continue", etc.:
 
 ## concept <id>.md structure
 
-Read `schemas/concept.json` before writing. Apply the schema-driven structure rule (frontmatter from `properties`, body from `x-body-sections`). All frontmatter fields are required:
-
-```markdown
----
-id: transformer_architecture
-name: "Transformer Architecture"
-related_concepts:
-  - "[[attention_mechanism]]"
-  - "[[positional_encoding]]"
-tags:
-  - architecture
-  - deep-learning
-sources:
-  - "[[karpathy_makemore_2023]]"
----
-
-# Transformer Architecture
-
-## Description
-One-sentence plain-English summary.
-
-One-paragraph plain-English summary.
-
-## Contents
-- [How it works](transformer_architecture_internals.md)
-- [Examples](transformer_architecture_examples.md)
-- [Patterns & pitfalls](transformer_architecture_patterns.md)
-
-## Key Takeaways
-- Bullet 1
-- Bullet 2
-
-## From sources
-- [[karpathy_makemore_2023]] — explains attention intuitively via bigram models
-```
+Read `schemas/concept.json` before writing. Use `x-file-example` in the schema as the rendering template. All frontmatter fields are required.
 
 **Folder rules**:
 - Flat — no nesting. Even subtopics of other concepts get sibling folders. Relationships live in `related_concepts` wikilinks, not folder hierarchy.
@@ -354,251 +320,26 @@ Before writing or updating **any** node file:
 
 1. Read the relevant `schemas/<type>.json`
 2. Build YAML frontmatter from its `properties` — required fields must be present; optional fields only if you have the data
-3. If `x-body-sections` is present, it contains `{ "$ref": "content/<type>.json" }` — read that file to get the body structure:
-   - Each property key is a `##` section heading; render them in listed order
-   - The ingest rule is in each property's `description` — follow it literally:
-     - "Write once on creation; do not overwrite" — write on creation only, never touch again on re-ingest
-     - "Append new bullets; never duplicate" — add new items below existing ones, skip exact matches
-     - "Append paragraphs; preserve existing text" — add below existing content, never clobber
-4. Schemas with **no** `x-body-sections` (e.g. `schemas/term.json`) produce frontmatter-only files
+3. Use `x-file-example` in the schema as the full rendering template
+4. If `x-body-sections` is present, read the referenced `content/<type>.json` for section order and per-section ingest rules (in each property's `description`) — follow them literally:
+   - "Write once on creation; do not overwrite" — write on creation only, never touch again on re-ingest
+   - "Append new bullets; never duplicate" — add new items below existing ones, skip exact matches
+   - "Append paragraphs; preserve existing text" — add below existing content, never clobber
+5. Schemas with **no** `x-body-sections` (e.g. `schemas/term.json`) produce frontmatter-only files
 
-This replaces all per-node body-section instructions — the schema is the single source of truth.
+The schema is the single source of truth for structure and examples.
 
----
+### Behavioral rules by node type
 
-### Source node
-Read `schemas/source.json` before writing. Example:
+**Author**: Only record opinions the user explicitly states — never infer. When new and `{ingest.auto_propose_author}` is `true`: ask "That article is by [Name]. Should I add them to your wiki? If so, what's your take on them?" — wait for confirmation and opinion before writing. If `false`, skip silently.
 
-```markdown
----
-id: karpathy_makemore_2023
-type: article
-title: "The spelled-out intro to language modeling: building makemore"
-url: https://...
-author: "[[andrej_karpathy]]"
-concepts:
-  - "[[bigram_model]]"
-  - "[[backprop]]"
-date_ingested: 2026-05-10
-tags:
-  - language-modeling
-  - pedagogy
----
+**Tool**: `sources` holds every URL known for the tool — the ingest URL goes here, not in `url`. `url` is reserved for the canonical homepage/docs. Only record `verdict`, `pros`, and `cons` from explicit user opinion, never infer. Surface stored opinions when relevant: "You marked this as 'avoid' — want to proceed anyway?" Prompt once per session per tool.
 
-## Summary
-One-paragraph summary of the source.
+**Idea**: When `status` changes to `promoted`, set `promoted_to` to the `[[wikilink]]` of the concept or workflow it became. When creating a concept or workflow directly from an idea, also back-link by setting `promoted_to` on the idea node. Never delete an idea node — set `status: shelved` instead.
 
-## Key concepts covered
-- Concept 1 — what the source adds
-- Concept 2 — what the source adds
+**Workflow**: `prerequisites` must be a strict subset of `concepts` — only the gates the learner must have at status Done before the workflow is useful.
 
-## Notes
-```
-
-### Author node
-Read `schemas/author.json` before writing. Only record opinions the user explicitly states — never infer.
-
-```markdown
----
-id: andrej_karpathy
-name: "Andrej Karpathy"
-url: https://karpathy.ai
-bio: "AI researcher known for pedagogical bottom-up implementations."
-expertise:
-  - "[[transformer_architecture]]"
-  - "[[backprop]]"
-sources:
-  - "[[karpathy_makemore_2023]]"
-verdict: recommended
----
-
-## Notes
-Great for fundamentals; builds everything from scratch.
-```
-
-When a new author is encountered and `{ingest.auto_propose_author}` is `true`: "That article is by [Name]. Should I add them to your wiki? If so, what's your take on them?" — wait for confirmation and opinion before writing. If `false`, skip silently.
-
-### Tool node
-Read `schemas/tool.json` before writing. Only record opinions the user explicitly states.
-
-```markdown
----
-id: pytorch
-name: "PyTorch"
-category: framework
-url: https://pytorch.org
-sources:
-  - "https://github.com/pytorch/pytorch"
-  - "https://pytorch.org/docs/"
-languages:
-  - name: "Python"
-    code_percentage: 100
-docker: true
-cloud: false
-platform: ["linux", "macos", "windows"]
-license: "BSD-3-Clause"
-version: "2.3.0"
-last_checked: 2026-06-03
-maturity: mature
-install: "pip install torch"
-alternatives:
-  - "[[tensorflow]]"
-  - "[[jax]]"
-tags:
-  - deep-learning
-  - training
-concepts:
-  - "[[neural_networks]]"
-  - "[[backprop]]"
-verdict: recommended
----
-
-## Description
-Deep learning framework with dynamic computation graphs.
-
-## Pros
-- Pythonic API
-
-## Cons
-
-## Notes
-```
-
-`sources` holds every URL known for the tool — the ingest URL goes here, not in `url`. `url` is reserved for the canonical homepage/docs. `language` can be a single string or a list. `docker` is `true`, `false`, or `null` (unknown).
-
-Surface stored opinions when relevant: "You marked this as 'avoid' — want to proceed anyway?" Only prompt once per session per new tool.
-
-### Workflow node
-
-Read `schemas/workflow.json` before writing. `prerequisites` is a strict subset of `concepts` — only the gates the learner must pass before the workflow is useful.
-
-```markdown
----
-id: rag_pipeline
-name: "Build a RAG pipeline"
-status: ready
-prerequisites:
-  - "[[embeddings]]"
-  - "[[vector_databases]]"
-concepts:
-  - "[[embeddings]]"
-  - "[[vector_databases]]"
-  - "[[chunking_strategies]]"
-  - "[[prompt_engineering]]"
-tools:
-  - "[[chromadb]]"
-  - "[[langchain]]"
-related_workflows:
-  - "[[fine_tuning_lora]]"
-sources:
-  - "[[langchain_rag_docs_2024]]"
-tags:
-  - retrieval
-  - rag
-difficulty: intermediate
-estimated_time: "2–4 hours"
-created_at: 2026-05-15
-last_updated: 2026-05-20
----
-
-# Build a RAG pipeline
-
-## Description
-Step-by-step guide to building a retrieval-augmented generation system.
-
-One-paragraph summary of what this workflow produces.
-
-## Prerequisites
-- [[embeddings]] — must be Done
-- [[vector_databases]] — must be Done
-
-## Steps
-
-### Step 1 — Chunk your documents
-**Goal**: Split source documents into chunks that fit your embedding model's context window.
-
-```python
-# example code here
-```
-
-**Checkpoint**: Run the chunker on a sample doc — do you see sensible splits?
-
-### Step 2 — Embed and store
-...
-
-## From sources
-- [[langchain_rag_docs_2024]] — official RAG implementation guide
-
-## Notes
-```
-
-### Idea node
-
-Read `schemas/idea.json` before writing. Required frontmatter: `id`, `title`, `status`, `created_at`, `tags`, `category`. Body sections from `schemas/content/idea.json`: `## Description`, `## Problem`, `## Approach`, `## Open Questions`, `## Notes`.
-
-```markdown
----
-id: spaced_repetition_ui
-title: "Spaced Repetition UI"
-status: exploring
-created_at: 2026-06-03
-category: tooling
-priority: medium
-tags:
-  - ux
-  - review
-related_concepts:
-  - "[[spaced_repetition]]"
-related_ideas: []
-sources: []
-effort: medium
-motivation: "Surface due-review concepts in a dedicated UI panel so the learner never misses a review date."
----
-
-## Description
-A lightweight sidebar or dashboard that surfaces concepts whose `review_due` date has passed, letting the learner kick off a review session in one click.
-
-## Problem
-- review_due dates exist in _progress.json but the learner must remember to check them manually
-
-## Approach
-- Read _progress.json on startup; filter concepts where review_due ≤ today
-- Render a sorted list with concept name, days overdue, and a "Review now" button
-
-## Open Questions
-- Should this be a separate command or part of the existing progress report?
-
-## Notes
-```
-
-**Lifecycle rules**:
-- When `status` changes to `promoted`, set `promoted_to` to the `[[wikilink]]` of the concept or workflow it became
-- When creating a concept or workflow directly from an idea, back-link by setting `promoted_to` on the idea node
-- Never delete an idea node — set `status: shelved` instead
-
-### Term node
-
-Read `schemas/term.json` before writing. Example:
-
-```markdown
----
-id: batch_normalization
-name: "Batch Normalization"
-definition: "Technique that normalizes each layer's inputs across a mini-batch to stabilize training and reduce sensitivity to initialization."
-related_concepts:
-  - "[[neural_networks]]"
-  - "[[optimization]]"
-related_terms:
-  - "[[layer_normalization]]"
-sources:
-  - "[[lecun_deep_learning_2015]]"
-tags:
-  - normalization
-  - deep-learning
----
-```
-
-Term nodes contain only a frontmatter block — no body. All cross-linking happens via `related_concepts`, `related_terms`, and `sources` wikilinks. Never duplicate a term node — check `{wiki.root}index.md` under `## Terms` before creating.
+**Term**: Frontmatter-only file — no body sections. Never duplicate — check `{wiki.root}index.md` under `## Terms` before creating.
 
 ## Diagrams
 

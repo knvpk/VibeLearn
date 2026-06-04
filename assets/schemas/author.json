@@ -7,6 +7,18 @@
   "required": ["id", "name"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/author.json" },
+  "examples": [
+    {
+      "id": "andrej_karpathy",
+      "name": "Andrej Karpathy",
+      "url": "https://karpathy.ai",
+      "bio": "AI researcher known for pedagogical bottom-up implementations.",
+      "expertise": ["[[transformer_architecture]]", "[[backprop]]"],
+      "sources": ["[[karpathy_makemore_2023]]"],
+      "verdict": "recommended"
+    }
+  ],
+  "x-file-example": "---\nid: andrej_karpathy\nname: \"Andrej Karpathy\"\nurl: https://karpathy.ai\nbio: \"AI researcher known for pedagogical bottom-up implementations.\"\nexpertise:\n  - \"[[transformer_architecture]]\"\n  - \"[[backprop]]\"\nsources:\n  - \"[[karpathy_makemore_2023]]\"\nverdict: recommended\n---\n\n## Notes\nGreat for fundamentals; builds everything from scratch.\n",
   "properties": {
     "id": {
       "type": "string",
