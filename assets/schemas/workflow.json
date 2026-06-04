@@ -4,12 +4,13 @@
   "title": "Workflow Frontmatter",
   "description": "Schema for the YAML frontmatter in every <workflows_dir>/<id>.md file. Workflows answer 'how do I execute Y' — they are procedural, prerequisite-gated, and distinct from concepts which answer 'what is X'.",
   "type": "object",
-  "required": ["id", "name", "status", "prerequisites", "concepts", "tools", "sources", "created_at"],
+  "required": ["id", "collection", "name", "status", "prerequisites", "concepts", "tools", "sources", "created_at"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/workflow.json" },
   "examples": [
     {
       "id": "rag_pipeline",
+      "collection": "workflow",
       "name": "Build a RAG pipeline",
       "status": "ready",
       "prerequisites": ["[[embeddings]]", "[[vector_databases]]"],
@@ -24,12 +25,17 @@
       "last_updated": "2026-05-20"
     }
   ],
-  "x-file-example": "---\nid: rag_pipeline\nname: \"Build a RAG pipeline\"\nstatus: ready\nprerequisites:\n  - \"[[embeddings]]\"\n  - \"[[vector_databases]]\"\nconcepts:\n  - \"[[embeddings]]\"\n  - \"[[vector_databases]]\"\n  - \"[[chunking_strategies]]\"\n  - \"[[prompt_engineering]]\"\ntools:\n  - \"[[chromadb]]\"\n  - \"[[langchain]]\"\nrelated_workflows:\n  - \"[[fine_tuning_lora]]\"\nsources:\n  - \"[[langchain_rag_docs_2024]]\"\ntags:\n  - retrieval\n  - rag\ndifficulty: intermediate\nestimated_time: \"2–4 hours\"\ncreated_at: 2026-05-15\nlast_updated: 2026-05-20\n---\n\n# Build a RAG pipeline\n\n## Description\nStep-by-step guide to building a retrieval-augmented generation system.\n\n## Steps\n\n### Step 1 — Chunk your documents\n**Goal**: Split source documents into chunks that fit your embedding model's context window.\n\n```python\n# example code here\n```\n\n**Checkpoint**: Run the chunker on a sample doc — do you see sensible splits?\n\n### Step 2 — Embed and store\n...\n\n## From sources\n- [[langchain_rag_docs_2024]] — official RAG implementation guide\n\n## Notes\n",
+  "x-file-example": "---\nid: rag_pipeline\ncollection: workflow\nname: \"Build a RAG pipeline\"\nstatus: ready\nprerequisites:\n  - \"[[embeddings]]\"\n  - \"[[vector_databases]]\"\nconcepts:\n  - \"[[embeddings]]\"\n  - \"[[vector_databases]]\"\n  - \"[[chunking_strategies]]\"\n  - \"[[prompt_engineering]]\"\ntools:\n  - \"[[chromadb]]\"\n  - \"[[langchain]]\"\nrelated_workflows:\n  - \"[[fine_tuning_lora]]\"\nsources:\n  - \"[[langchain_rag_docs_2024]]\"\ntags:\n  - retrieval\n  - rag\ndifficulty: intermediate\nestimated_time: \"2–4 hours\"\ncreated_at: 2026-05-15\nlast_updated: 2026-05-20\n---\n\n# Build a RAG pipeline\n\n## Description\nStep-by-step guide to building a retrieval-augmented generation system.\n\n## Steps\n\n### Step 1 — Chunk your documents\n**Goal**: Split source documents into chunks that fit your embedding model's context window.\n\n```python\n# example code here\n```\n\n**Checkpoint**: Run the chunker on a sample doc — do you see sensible splits?\n\n### Step 2 — Embed and store\n...\n\n## From sources\n- [[langchain_rag_docs_2024]] — official RAG implementation guide\n\n## Notes\n",
   "properties": {
     "id": {
       "type": "string",
       "description": "Snake_case ID used as the filename and in [[wikilinks]]",
       "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "workflow",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
     },
     "name": {
       "type": "string",
