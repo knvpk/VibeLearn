@@ -70,10 +70,10 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 
 Schema paths are hardcoded — never read from config:
-`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`
+`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`
 
 Body-section schemas (resolved via `$ref` from each top-level schema):
-`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`
+`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`, `schemas/content/language.json`
 
 Then derive the state directory (hardcoded, not in config):
 - `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
@@ -99,6 +99,7 @@ Three content layers:
 - Workflows: `{wiki.root}workflows/<id>.md` — procedural step-by-step guides, prerequisite-gated by concept status
 - Ideas: `{wiki.root}ideas/<id>.md` — raw or evolving thoughts that may be promoted to a concept, workflow, or project
 - Collections: `{wiki.root}collections/<id>.md` — named groups of source URLs ingested together; aggregates source and concept nodes across all items
+- Languages: `{wiki.root}languages/<id>.md` — programming language nodes with execution model, package managers, bundlers, and version history
 
 **Navigation files**:
 - `{wiki.root}index.md` — full concept map with `[[wikilinks]]`, organized by phase, plus a `## Terms` section listing all term IDs. The LLM reads this to check what exists and navigate the graph.
@@ -476,6 +477,8 @@ The schema is the single source of truth for structure and examples.
 **Collection**: Two kinds — catalog (parsed from a single list URL) and manual (user-supplied URLs). `sources` is populated automatically during ingest — never hand-edit it. `items` records only the URLs **selected for ingest**, not every link extracted from the catalog. `catalog_url` preserves the original list URL. When re-ingesting (e.g. user selects more items from the same catalog), fetch only the new selections — skip any URL already present in `items`.
 
 **Term**: Frontmatter-only file — no body sections. Never duplicate — check `{wiki.root}index.md` under `## Terms` before creating.
+
+**Language**: `execution` must be set from authoritative knowledge, not inferred from context. `package_managers` and `bundlers` list the ecosystem's dominant tools in order of prevalence — only record entries the user confirms or that are unambiguous facts. `versions` lists notable supported versions, most recent last; do not guess — only record what the user supplies or what is publicly documented.
 
 ## Diagrams
 
