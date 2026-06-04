@@ -2,28 +2,44 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "collection.json",
   "title": "Collection Frontmatter",
-  "description": "Schema for the YAML frontmatter in every <collections_dir>/<id>.md file. A collection bundles multiple source URLs for batch ingest — all items are fetched, parsed, and merged into the wiki together.",
+  "description": "Schema for the YAML frontmatter in every <collections_dir>/<id>.md file. A collection is either a catalog URL (awesome list, RSS feed, link index) from which items are extracted and selectively ingested, or a manually grouped set of URLs ingested together.",
   "type": "object",
-  "required": ["id", "collection", "title", "items", "date_ingested"],
+  "required": ["id", "collection", "title", "date_ingested"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/collection.json" },
   "examples": [
     {
-      "id": "transformer_reading_list",
+      "id": "awesome_laravel",
       "collection": "collection",
-      "title": "Transformer Architecture Reading List",
+      "title": "Awesome Laravel",
+      "catalog_url": "https://github.com/chiraggude/awesome-laravel",
+      "catalog_type": "awesome-list",
       "items": [
-        "https://arxiv.org/abs/1706.03762",
-        "https://jalammar.github.io/illustrated-transformer/",
-        "https://karpathy.ai/zero-to-hero.html"
+        "https://github.com/laravel/framework",
+        "https://github.com/barryvdh/laravel-debugbar"
       ],
-      "sources": ["[[attention_is_all_you_need]]", "[[illustrated_transformer]]", "[[karpathy_makemore_2023]]"],
-      "concepts": ["[[transformer_architecture]]", "[[attention_mechanism]]", "[[positional_encoding]]"],
+      "sources": ["[[laravel_framework]]", "[[laravel_debugbar]]"],
+      "concepts": ["[[laravel_service_container]]", "[[middleware]]"],
       "date_ingested": "2026-06-04",
-      "tags": ["transformers", "attention", "reading-list"]
+      "tags": ["laravel", "php"]
+    },
+    {
+      "id": "laravel_news_feed",
+      "collection": "collection",
+      "title": "Laravel News RSS",
+      "catalog_url": "https://feed.laravel-news.com/",
+      "catalog_type": "rss",
+      "items": [
+        "https://laravel-news.com/laravel-11-features",
+        "https://laravel-news.com/livewire-v3"
+      ],
+      "sources": ["[[laravel_11_features]]", "[[livewire_v3]]"],
+      "concepts": ["[[laravel_pipelines]]", "[[livewire]]"],
+      "date_ingested": "2026-06-04",
+      "tags": ["laravel", "news"]
     }
   ],
-  "x-file-example": "---\nid: transformer_reading_list\ncollection: collection\ntitle: \"Transformer Architecture Reading List\"\nitems:\n  - https://arxiv.org/abs/1706.03762\n  - https://jalammar.github.io/illustrated-transformer/\ndescription: \"Core papers and guides for understanding transformer architecture.\"\nsources:\n  - \"[[attention_is_all_you_need]]\"\n  - \"[[illustrated_transformer]]\"\nconcepts:\n  - \"[[transformer_architecture]]\"\n  - \"[[attention_mechanism]]\"\ndate_ingested: 2026-06-04\ntags:\n  - transformers\n  - reading-list\n---\n\n## Description\nWhat this collection covers and why these sources were grouped together.\n\n## Sources\n- [[attention_is_all_you_need]] — original \"Attention Is All You Need\" paper\n- [[illustrated_transformer]] — visual walkthrough of the transformer architecture\n\n## Key concepts covered\n- [[transformer_architecture]] — core architecture introduced across all items\n- [[attention_mechanism]] — self-attention explained from first principles\n\n## Notes\n",
+  "x-file-example": "---\nid: awesome_laravel\ncollection: collection\ntitle: \"Awesome Laravel\"\ncatalog_url: https://github.com/chiraggude/awesome-laravel\ncatalog_type: awesome-list\ndescription: \"Curated Laravel packages and resources from the awesome-laravel list.\"\nitems:\n  - https://github.com/laravel/framework\n  - https://github.com/barryvdh/laravel-debugbar\nsources:\n  - \"[[laravel_framework]]\"\n  - \"[[laravel_debugbar]]\"\nconcepts:\n  - \"[[laravel_service_container]]\"\n  - \"[[middleware]]\"\ndate_ingested: 2026-06-04\ntags:\n  - laravel\n  - php\n---\n\n## Description\nCurated packages and resources extracted from the awesome-laravel GitHub list.\n\n## Sources\n- [[laravel_framework]] — core Laravel framework repo\n- [[laravel_debugbar]] — debug toolbar package\n\n## Key concepts covered\n- [[laravel_service_container]] — dependency injection container used across packages\n- [[middleware]] — HTTP middleware layer referenced in multiple packages\n\n## Notes\n",
   "properties": {
     "id": {
       "type": "string",
@@ -39,11 +55,27 @@
       "type": "string",
       "description": "Human-readable title for the collection (e.g. 'Transformer Reading List')"
     },
+    "catalog_url": {
+      "description": "The original catalog URL that was parsed to produce this collection (e.g. an awesome-list repo, an RSS feed, a newsletter index). Null for manually-assembled collections.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "catalog_type": {
+      "description": "How the catalog was detected. Drives parsing strategy.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["awesome-list", "rss", "atom", "html-index", "manual"]
+        },
+        { "type": "null" }
+      ]
+    },
     "items": {
       "type": "array",
-      "description": "Ordered list of URLs to fetch and ingest. May also include [[wikilinks]] to already-ingested source nodes.",
+      "description": "URLs selected for ingest from the catalog (or manually listed). Populated after the user confirms selection. May also include [[wikilinks]] to already-ingested source nodes.",
       "items": { "type": "string" },
-      "minItems": 2,
       "uniqueItems": true
     },
     "description": {
