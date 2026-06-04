@@ -416,11 +416,47 @@ Due for review: [[attention_mechanism]] (due 2026-05-28)
 
 ## Lint
 
-When the user asks to "lint" or "health check" the wiki:
+### Collection map
+
+This table is the authority for all lint phases. A node's `collection` value determines its expected directory, schema, and fix strategy.
+
+| `collection` value | directory under `{wiki.root}` | schema |
+|---|---|---|
+| `concept` | `concepts/<id>/` (folder + `<id>.md` entry) | `schemas/concept.json` |
+| `source` | `sources/<id>.md` | `schemas/source.json` |
+| `author` | `authors/<id>.md` | `schemas/author.json` |
+| `tool` | `tools/<id>.md` | `schemas/tool.json` |
+| `workflow` | `workflows/<id>.md` | `schemas/workflow.json` |
+| `term` | `terms/<id>.md` | `schemas/term.json` |
+| `idea` | `ideas/<id>.md` | `schemas/idea.json` |
+| `language` | `languages/<id>.md` | `schemas/language.json` |
+| `collection` | `collections/<id>.md` | `schemas/collection.json` |
+
+When the user asks to "lint", "health check", or "migrate wiki":
+
+### Phase 1 — Directory structure
+
+1. For each `collection` value in the map above, check whether its directory exists under `{wiki.root}`. Flag any missing directory.
+2. Scan every `.md` file under every node directory. Parse each file's YAML frontmatter:
+   - If `collection` is absent: flag as "missing `collection` field — node type unknown"
+   - If the `collection` value does not match the expected value for that directory (e.g., a file in `tools/` with `collection: source`): flag as misplaced
+3. For `concepts/` specifically: verify each subdirectory `<id>/` contains an `<id>.md` entry file. Report any concept folder missing its entry file.
+4. Check every node's `id` frontmatter field matches its filename (without `.md`). Flag mismatches.
+
+### Phase 2 — Schema compliance
+
+For each node file, using the collection map to select the schema:
+
+1. Read `schemas/<collection>.json`
+2. Check all `required` fields from the schema are present in the node's frontmatter. Report any missing.
+3. If the schema has `"additionalProperties": false`: check for frontmatter fields NOT in the schema's `properties`. Report each as "unknown field — schema drift".
+4. Validate the `collection` const: the schema declares `"const": "<type>"` on the `collection` property. If the frontmatter value doesn't match, flag it.
+
+### Phase 3 — Graph integrity
 
 1. Scan `{wiki.root}concepts/` — collect all concept IDs (folder names)
 2. Read `{wiki.root}index.md` — collect all IDs listed in both concept and workflow sections
-3. Scan `{wiki.root}sources/`, `{wiki.root}authors/`, `{wiki.root}tools/`, `{wiki.root}workflows/`, `{wiki.root}ideas/`, `{wiki.root}collections/` — collect all node IDs
+3. Scan all node directories using the collection map — collect all IDs
 4. Read `{wiki.root}.state/_progress.json` and `{wiki.root}.state/_plan.json`. Check for:
    - Concept folders that exist but are not listed in `_plan.json` (orphan folders)
    - Concepts listed in `_plan.json` with no folder (stubs)
@@ -437,14 +473,57 @@ When the user asks to "lint" or "health check" the wiki:
    - Idea nodes with `status: promoted` but no `promoted_to` set (broken promotion link)
    - Idea nodes with `promoted_to` pointing to a concept or workflow that doesn't exist (dangling promotion link)
    - Collection nodes whose `sources` array references a source ID with no matching file in `{wiki.root}sources/` (dangling collection source)
-   - Collection nodes whose `items` list contains URLs with no matching `[[source_id]]` in their `sources` array (un-ingested collection items) — surface as: "[[<collection_id>]] has un-ingested items. Want to run a collection ingest?"
-   - Collection nodes with an empty `concepts` array (collection not yet linked to the curriculum)
-5. Report findings as a numbered checklist
-6. Ask: "Want me to fix any of these?"
+   - Collection nodes whose `items` list contains URLs with no matching `[[source_id]]` in their `sources` array (un-ingested items) — surface as: "[[<collection_id>]] has un-ingested items. Want to run a collection ingest?"
+   - Collection nodes with an empty `concepts` array (not yet linked to curriculum)
+
+### Report
+
+Print findings as a numbered checklist grouped by phase:
+
+```
+## Wiki Lint Report
+
+### Phase 1 — Directory structure
+  [1] Missing directory: languages/ (no language nodes exist yet)
+  [2] Misplaced: sources/pytorch.md has collection: tool — expected in tools/
+
+### Phase 2 — Schema compliance
+  [3] concepts/attention/attention.md — missing required field: difficulty
+  [4] tools/pytorch.md — unknown field: language (not in schemas/tool.json)
+
+### Phase 3 — Graph integrity
+  [5] Orphan concept folder: positional_encoding/ not listed in _plan.json
+  [6] Dangling term link: [[tokenizer]] in attention.md but no terms/tokenizer.md
+
+Found N issues. Want me to fix any of these? (reply with "all", numbers like "1,3", or a range like "1-4")
+```
+
+### Fix
+
+When the user says yes (by number, range, or "all"), apply fixes by category:
+
+**Auto-fix (applied immediately, no confirmation needed)**:
+- Create missing directories (Phase 1 missing dir)
+- Strip unknown frontmatter fields from nodes whose schema has `"additionalProperties": false` (Phase 2 schema drift)
+- Correct `collection` const value when derivable from the node's directory (Phase 2 wrong const)
+- Add missing required array fields as `[]` (Phase 2)
+- Add `status: draft` to workflow nodes missing `status` (Phase 2)
+- Add `date_ingested` / `created_at` to nodes missing those fields, using today's date (Phase 2)
+
+**Fix with confirmation (show the proposed change, wait for approval before writing)**:
+- Move a misplaced node to its correct directory — on approval, move the file and update all `[[<id>]]` wikilinks across the wiki that reference the old location
+- Add any other missing required field where no safe default exists — propose a value, wait for approval
+
+**Cannot auto-fix (report and skip)**:
+- `collection` absent and the correct type is ambiguous (node appears in no recognised directory)
+- Concept folder with no `<id>.md` entry file — offer to scaffold an entry from the schema `x-file-example` instead
+- `id` ≠ filename — clarify which is canonical before renaming
+
+After applying fixes, print a delta: "Fixed N of M issues. K remaining require manual action."
 
 Append to `{wiki.root}.state/_log.json`:
 ```json
-{ "date": "<ISO date>", "operation": "lint", "issues_found": 3, "issues_fixed": 2 }
+{ "date": "<ISO date>", "operation": "lint", "issues_found": 8, "schema_issues": 3, "graph_issues": 5, "issues_fixed": 5 }
 ```
 
 ## Node file structures
