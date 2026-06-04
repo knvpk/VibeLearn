@@ -7,6 +7,29 @@
   "required": ["id", "name", "category"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/tool.json" },
+  "examples": [
+    {
+      "id": "pytorch",
+      "name": "PyTorch",
+      "category": "framework",
+      "url": "https://pytorch.org",
+      "sources": ["https://github.com/pytorch/pytorch", "https://pytorch.org/docs/"],
+      "languages": [{"name": "Python", "code_percentage": 100}],
+      "docker": true,
+      "cloud": false,
+      "platform": ["linux", "macos", "windows"],
+      "license": "BSD-3-Clause",
+      "version": "2.3.0",
+      "last_checked": "2026-06-03",
+      "maturity": "mature",
+      "install": "pip install torch",
+      "alternatives": ["[[tensorflow]]", "[[jax]]"],
+      "tags": ["deep-learning", "training"],
+      "concepts": ["[[neural_networks]]", "[[backprop]]"],
+      "verdict": "recommended"
+    }
+  ],
+  "x-file-example": "---\nid: pytorch\nname: \"PyTorch\"\ncategory: framework\nurl: https://pytorch.org\nsources:\n  - \"https://github.com/pytorch/pytorch\"\n  - \"https://pytorch.org/docs/\"\nlanguages:\n  - name: \"Python\"\n    code_percentage: 100\ndocker: true\ncloud: false\nplatform: [\"linux\", \"macos\", \"windows\"]\nlicense: \"BSD-3-Clause\"\nversion: \"2.3.0\"\nlast_checked: 2026-06-03\nmaturity: mature\ninstall: \"pip install torch\"\nalternatives:\n  - \"[[tensorflow]]\"\n  - \"[[jax]]\"\ntags:\n  - deep-learning\n  - training\nconcepts:\n  - \"[[neural_networks]]\"\n  - \"[[backprop]]\"\nverdict: recommended\n---\n\n## Description\nDeep learning framework with dynamic computation graphs.\n\n## Pros\n- Pythonic API\n\n## Cons\n\n## Notes\n",
   "properties": {
     "id": {
       "type": "string",

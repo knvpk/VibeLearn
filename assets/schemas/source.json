@@ -7,6 +7,19 @@
   "required": ["id", "type", "title", "url", "concepts", "date_ingested"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/source.json" },
+  "examples": [
+    {
+      "id": "karpathy_makemore_2023",
+      "type": "article",
+      "title": "The spelled-out intro to language modeling: building makemore",
+      "url": "https://karpathy.ai/zero-to-hero.html",
+      "author": "[[andrej_karpathy]]",
+      "concepts": ["[[bigram_model]]", "[[backprop]]"],
+      "date_ingested": "2026-05-10",
+      "tags": ["language-modeling", "pedagogy"]
+    }
+  ],
+  "x-file-example": "---\nid: karpathy_makemore_2023\ntype: article\ntitle: \"The spelled-out intro to language modeling: building makemore\"\nurl: https://karpathy.ai/zero-to-hero.html\nauthor: \"[[andrej_karpathy]]\"\nconcepts:\n  - \"[[bigram_model]]\"\n  - \"[[backprop]]\"\ndate_ingested: 2026-05-10\ntags:\n  - language-modeling\n  - pedagogy\n---\n\n## Summary\nOne-paragraph summary of the source.\n\n## Key concepts covered\n- [[bigram_model]] — introduces character-level bigram language models from scratch\n- [[backprop]] — manual backprop walkthrough with no PyTorch autograd\n\n## Notes\n",
   "properties": {
     "id": {
       "type": "string",

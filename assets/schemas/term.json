@@ -6,6 +6,18 @@
   "type": "object",
   "required": ["id", "name", "definition"],
   "additionalProperties": false,
+  "examples": [
+    {
+      "id": "batch_normalization",
+      "name": "Batch Normalization",
+      "definition": "Technique that normalizes each layer's inputs across a mini-batch to stabilize training and reduce sensitivity to initialization.",
+      "related_concepts": ["[[neural_networks]]", "[[optimization]]"],
+      "related_terms": ["[[layer_normalization]]"],
+      "sources": ["[[lecun_deep_learning_2015]]"],
+      "tags": ["normalization", "deep-learning"]
+    }
+  ],
+  "x-file-example": "---\nid: batch_normalization\nname: \"Batch Normalization\"\ndefinition: \"Technique that normalizes each layer's inputs across a mini-batch to stabilize training and reduce sensitivity to initialization.\"\nrelated_concepts:\n  - \"[[neural_networks]]\"\n  - \"[[optimization]]\"\nrelated_terms:\n  - \"[[layer_normalization]]\"\nsources:\n  - \"[[lecun_deep_learning_2015]]\"\ntags:\n  - normalization\n  - deep-learning\n---\n",
   "properties": {
     "id": {
       "type": "string",
