@@ -430,7 +430,9 @@ url: https://pytorch.org
 sources:
   - "https://github.com/pytorch/pytorch"
   - "https://pytorch.org/docs/"
-language: "Python"
+languages:
+  - name: "Python"
+    code_percentage: 100
 docker: true
 cloud: false
 platform: ["linux", "macos", "windows"]
