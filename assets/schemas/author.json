@@ -4,12 +4,13 @@
   "title": "Author Frontmatter",
   "description": "Schema for the YAML frontmatter in every <authors_dir>/<id>.md file",
   "type": "object",
-  "required": ["id", "name"],
+  "required": ["id", "collection", "name"],
   "additionalProperties": false,
   "x-body-sections": { "$ref": "content/author.json" },
   "examples": [
     {
       "id": "andrej_karpathy",
+      "collection": "author",
       "name": "Andrej Karpathy",
       "url": "https://karpathy.ai",
       "bio": "AI researcher known for pedagogical bottom-up implementations.",
@@ -18,12 +19,17 @@
       "verdict": "recommended"
     }
   ],
-  "x-file-example": "---\nid: andrej_karpathy\nname: \"Andrej Karpathy\"\nurl: https://karpathy.ai\nbio: \"AI researcher known for pedagogical bottom-up implementations.\"\nexpertise:\n  - \"[[transformer_architecture]]\"\n  - \"[[backprop]]\"\nsources:\n  - \"[[karpathy_makemore_2023]]\"\nverdict: recommended\n---\n\n## Notes\nGreat for fundamentals; builds everything from scratch.\n",
+  "x-file-example": "---\nid: andrej_karpathy\ncollection: author\nname: \"Andrej Karpathy\"\nurl: https://karpathy.ai\nbio: \"AI researcher known for pedagogical bottom-up implementations.\"\nexpertise:\n  - \"[[transformer_architecture]]\"\n  - \"[[backprop]]\"\nsources:\n  - \"[[karpathy_makemore_2023]]\"\nverdict: recommended\n---\n\n## Notes\nGreat for fundamentals; builds everything from scratch.\n",
   "properties": {
     "id": {
       "type": "string",
       "description": "Snake_case ID used as the filename and in [[wikilinks]]",
       "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "author",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
     },
     "name": {
       "type": "string",
