@@ -14,12 +14,13 @@
       "name": "Andrej Karpathy",
       "url": "https://karpathy.ai",
       "bio": "AI researcher known for pedagogical bottom-up implementations.",
+      "company": "[[openai]]",
       "expertise": ["[[transformer_architecture]]", "[[backprop]]"],
       "sources": ["[[karpathy_makemore_2023]]"],
       "verdict": "recommended"
     }
   ],
-  "x-file-example": "---\nid: andrej_karpathy\ncollection: author\nname: \"Andrej Karpathy\"\nurl: https://karpathy.ai\nbio: \"AI researcher known for pedagogical bottom-up implementations.\"\nexpertise:\n  - \"[[transformer_architecture]]\"\n  - \"[[backprop]]\"\nsources:\n  - \"[[karpathy_makemore_2023]]\"\nverdict: recommended\n---\n\n## Notes\nGreat for fundamentals; builds everything from scratch.\n",
+  "x-file-example": "---\nid: andrej_karpathy\ncollection: author\nname: \"Andrej Karpathy\"\nurl: https://karpathy.ai\nbio: \"AI researcher known for pedagogical bottom-up implementations.\"\ncompany: \"[[openai]]\"\nexpertise:\n  - \"[[transformer_architecture]]\"\n  - \"[[backprop]]\"\nsources:\n  - \"[[karpathy_makemore_2023]]\"\nverdict: recommended\n---\n\n## Notes\nGreat for fundamentals; builds everything from scratch.\n",
   "properties": {
     "id": {
       "type": "string",
@@ -50,9 +51,9 @@
       ]
     },
     "company": {
-      "description": "Organisation or company the author is affiliated with",
+      "description": "[[wikilink]] reference to the company node this author is affiliated with",
       "oneOf": [
-        { "type": "string" },
+        { "type": "string", "pattern": "^\\[\\[.+\\]\\]$" },
         { "type": "null" }
       ]
     },

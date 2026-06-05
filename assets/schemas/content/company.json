@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "company.json",
+  "title": "Company Body Sections",
+  "description": "Markdown body sections expected in every company file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
+  "type": "object",
+  "properties": {
+    "## Description": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What the company does and why it matters in the learning domain."
+    },
+    "## Notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form opinion or observations recorded verbatim from the user. Append paragraphs; preserve existing text."
+    }
+  },
+  "additionalProperties": false
+}
