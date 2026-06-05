@@ -1,0 +1,69 @@
+# OpenSpec project configuration for VibeLearn
+# Docs: https://github.com/Fission-AI/OpenSpec
+
+schema: spec-driven
+
+context: |
+  ## Project: VibeLearn
+
+  A curriculum-driven software learning tutor distributed as a Claude Code skill.
+  The skill is invoked via `/vibe_learn` and teaches one concept at a time using a
+  Socratic approach (analogy → simple example → complexity). It reads a
+  `vibe_learn.config.yaml` from the user's project root, tracks progress in
+  `theory/progress.json`, and saves structured notes into `theory/concepts/<id>/`.
+
+  ### Core files (do not rename without updating SKILL.md)
+  - `SKILL.md`                          — skill definition loaded by Claude Code
+  - `skill.json`                        — machine-readable manifest for installers
+  - `vibe_learn.config.yaml`            — user-facing config (topic, paths, language)
+  - `assets/vibe_learn.config.template.yaml` — starter template copied on install
+  - `assets/starter/`                   — starter JSON files (concepts, plan, progress, sources)
+  - `references/`                       — url-workflow, saving-content, diagrams rules
+
+  ### Curriculum data schema (user's project, not this repo)
+  - `theory/concepts.json`   — hierarchical topic map with phase/priority/subtopics
+  - `theory/plan.json`       — phase order, durations, prerequisites
+  - `theory/progress.json`   — per-concept status (Not started → In progress → Done)
+  - `theory/sources.json`    — external resource registry with concept links
+  - `theory/concepts/<id>/`  — flat folders; main.md + internals.md + examples.md + patterns.md
+
+  ### Key constraints
+  - Concept folders are always flat siblings — never nest one inside another.
+  - `main.md` should stay under 80 lines; deep content goes into split sibling files.
+  - The tutor never edits `concepts.json` or `concept_meta.json` without user confirmation.
+  - `status: "Done"` is only set after the user explicitly confirms understanding.
+  - Diagram files are named after what they show (e.g. `tokenization_pipeline.md`) and
+    linked inline from the section that references them, not only from `main.md`.
+
+  ### Code style / language
+  - Primary example language: Python 3.11+
+  - Default framework: FastAPI
+  - Preferred idioms: async/await, dependency injection, Pydantic v2 models
+  - Type hints required on all new functions.
+
+  ### Out of scope
+  - This repo does not contain any user curriculum data — only the skill definition
+    and its assets. Do not create `theory/` folders or progress files in this repo.
+  - Do not add a runtime server, CI pipeline, or package registry entry unless
+    explicitly requested.
+
+rules:
+  proposal:
+    - State which file(s) will change and why existing code cannot already satisfy the need.
+    - If the change touches SKILL.md, explain the user-visible behaviour difference.
+    - Keep proposals focused on a single concern; split unrelated changes into separate proposals.
+
+  specs:
+    - Each spec must reference the exact file path(s) it affects.
+    - Describe the before/after state for any data file schema changes (concepts.json, progress.json, etc.).
+    - Call out any user-facing config (vibe_learn.config.yaml) additions as a breaking or additive change.
+
+  design:
+    - Prefer editing existing files over creating new ones.
+    - If adding a new reference doc under references/, explain how SKILL.md will link to it.
+    - Diagram changes must identify the format (Mermaid / D2 / SVG) and the file name.
+
+  tasks:
+    - Each task must have a single, verifiable done condition.
+    - Tasks that touch progress.json or concepts.json must include a rollback note.
+    - Mark tasks that require a Claude Code session restart (e.g. new skill files) with [restart-required].
