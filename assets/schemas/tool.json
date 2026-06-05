@@ -18,7 +18,7 @@
       "languages": [{"name": "Python", "code_percentage": 100}],
       "docker": true,
       "cloud": false,
-      "platform": ["linux", "macos", "windows"],
+      "supported_platforms": ["[[ubuntu_22_04]]", "[[macos_ventura]]", "[[windows_11]]"],
       "license": "BSD-3-Clause",
       "version": "2.3.0",
       "last_checked": "2026-06-03",
@@ -30,7 +30,7 @@
       "verdict": "recommended"
     }
   ],
-  "x-file-example": "---\nid: pytorch\ncollection: tool\nname: \"PyTorch\"\ncategory: framework\nurl: https://pytorch.org\nsources:\n  - \"https://github.com/pytorch/pytorch\"\n  - \"https://pytorch.org/docs/\"\nlanguages:\n  - name: \"Python\"\n    code_percentage: 100\ndocker: true\ncloud: false\nplatform: [\"linux\", \"macos\", \"windows\"]\nlicense: \"BSD-3-Clause\"\nversion: \"2.3.0\"\nlast_checked: 2026-06-03\nmaturity: mature\ninstall: \"pip install torch\"\nalternatives:\n  - \"[[tensorflow]]\"\n  - \"[[jax]]\"\ntags:\n  - deep-learning\n  - training\nconcepts:\n  - \"[[neural_networks]]\"\n  - \"[[backprop]]\"\nverdict: recommended\n---\n\n## Description\nDeep learning framework with dynamic computation graphs.\n\n## Pros\n- Pythonic API\n\n## Cons\n\n## Notes\n",
+  "x-file-example": "---\nid: pytorch\ncollection: tool\nname: \"PyTorch\"\ncategory: framework\nurl: https://pytorch.org\nsources:\n  - \"https://github.com/pytorch/pytorch\"\n  - \"https://pytorch.org/docs/\"\nlanguages:\n  - name: \"Python\"\n    code_percentage: 100\ndocker: true\ncloud: false\nsupported_platforms:\n  - \"[[ubuntu_22_04]]\"\n  - \"[[macos_ventura]]\"\n  - \"[[windows_11]]\"\nlicense: \"BSD-3-Clause\"\nversion: \"2.3.0\"\nlast_checked: 2026-06-03\nmaturity: mature\ninstall: \"pip install torch\"\nalternatives:\n  - \"[[tensorflow]]\"\n  - \"[[jax]]\"\ntags:\n  - deep-learning\n  - training\nconcepts:\n  - \"[[neural_networks]]\"\n  - \"[[backprop]]\"\nverdict: recommended\n---\n\n## Description\nDeep learning framework with dynamic computation graphs.\n\n## Pros\n- Pythonic API\n\n## Cons\n\n## Notes\n",
   "properties": {
     "id": {
       "type": "string",
@@ -102,15 +102,12 @@
         { "type": "null" }
       ]
     },
-    "platform": {
-      "description": "Runtime platform(s) the tool supports",
+    "supported_platforms": {
+      "description": "[[wikilink]] references to os nodes representing platforms this tool runs on",
       "oneOf": [
         {
           "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["linux", "macos", "windows", "web", "mobile", "wasm", "any"]
-          },
+          "items": { "type": "string" },
           "uniqueItems": true,
           "minItems": 1
         },

@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "os.json",
+  "title": "OS Body Sections",
+  "description": "Markdown body sections expected in every os file. Not frontmatter — extracted by ingest, never validated by JSON Schema.",
+  "type": "object",
+  "properties": {
+    "## Overview": {
+      "type": "string",
+      "description": "One-to-two sentence description of the OS and its primary use case. Write once on creation; do not overwrite."
+    },
+    "## Notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form observations recorded verbatim from the user. Append paragraphs; preserve existing text."
+    }
+  },
+  "additionalProperties": false
+}
