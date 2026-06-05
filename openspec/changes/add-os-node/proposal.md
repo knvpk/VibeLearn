@@ -21,4 +21,5 @@ The `tool` schema uses a flat `platform` enum (`linux`, `macos`, `windows`) that
 - `assets/schemas/tool.json` — one property removed (`platform`), one added (`supported_platforms`).
 - `assets/schemas/os.json` — new file.
 - `assets/schemas/content/os.json` — new file.
+- `SKILL.md` — `os.json` and `content/os.json` added to hardcoded schema path lists; `os/` added to node directory reference.
 - Any existing tool markdown files using `platform:` frontmatter will need migration to `supported_platforms:`.

@@ -9,8 +9,13 @@
 - [x] 2.3 Add relation fields to `os.json`: `tools` (wikilink array, default `[]`), `tags` (string array, default `[]`)
 - [x] 2.4 Add `x-body-sections` ref to `content/os.json` and include a complete `examples` entry and `x-file-example` string in `os.json`
 
-## 3. Tool Schema Migration
+## 3. SKILL.md Registration
 
-- [x] 3.1 Remove `platform` property from `assets/schemas/tool.json`
-- [x] 3.2 Add `supported_platforms` property to `assets/schemas/tool.json` — nullable array of wikilink strings
-- [x] 3.3 Update the `examples` array and `x-file-example` in `tool.json` to use `supported_platforms` instead of `platform`
+- [x] 3.1 Add `schemas/os.json` and `schemas/content/os.json` to hardcoded schema path lists in `SKILL.md`
+- [x] 3.2 Add `os/<id>.md` node directory entry to `SKILL.md`
+
+## 4. Tool Schema Migration
+
+- [x] 4.1 Remove `platform` property from `assets/schemas/tool.json`
+- [x] 4.2 Add `supported_platforms` property to `assets/schemas/tool.json` — nullable array of wikilink strings
+- [x] 4.3 Update the `examples` array and `x-file-example` in `tool.json` to use `supported_platforms` instead of `platform`
