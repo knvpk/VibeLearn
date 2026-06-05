@@ -70,10 +70,10 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 
 Schema paths are hardcoded — never read from config:
-`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`
+`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`, `schemas/company.json`
 
 Body-section schemas (resolved via `$ref` from each top-level schema):
-`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`, `schemas/content/language.json`
+`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`, `schemas/content/language.json`, `schemas/content/company.json`
 
 Then derive the state directory (hardcoded, not in config):
 - `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
@@ -431,6 +431,7 @@ This table is the authority for all lint phases. A node's `collection` value det
 | `idea` | `ideas/<id>.md` | `schemas/idea.json` |
 | `language` | `languages/<id>.md` | `schemas/language.json` |
 | `collection` | `collections/<id>.md` | `schemas/collection.json` |
+| `company` | `companies/<id>.md` | `schemas/company.json` |
 
 When the user asks to "lint", "health check", or "migrate wiki":
 
