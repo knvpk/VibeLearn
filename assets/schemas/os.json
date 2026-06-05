@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "os.json",
+  "title": "OS Frontmatter",
+  "description": "Schema for the YAML frontmatter in every <os_dir>/<id>.md file",
+  "type": "object",
+  "required": ["id", "collection", "name", "family", "form_factor"],
+  "additionalProperties": false,
+  "x-body-sections": { "$ref": "content/os.json" },
+  "examples": [
+    {
+      "id": "ubuntu_22_04",
+      "collection": "os",
+      "name": "Ubuntu 22.04 LTS",
+      "family": "linux",
+      "form_factor": "server",
+      "version": "22.04",
+      "arch": ["x86_64", "arm64"],
+      "kernel": "5.15",
+      "package_manager": "apt",
+      "eol": "2027-04-01",
+      "lts": true,
+      "tools": ["[[docker]]", "[[pytorch]]"],
+      "tags": ["ubuntu", "debian-based"]
+    }
+  ],
+  "x-file-example": "---\nid: ubuntu_22_04\ncollection: os\nname: \"Ubuntu 22.04 LTS\"\nfamily: linux\nform_factor: server\nversion: \"22.04\"\narch:\n  - x86_64\n  - arm64\nkernel: \"5.15\"\npackage_manager: apt\neol: 2027-04-01\nlts: true\ntools:\n  - \"[[docker]]\"\n  - \"[[pytorch]]\"\ntags:\n  - ubuntu\n  - debian-based\n---\n\n## Overview\nDebian-based Linux distribution with long-term support, widely used in cloud and server environments.\n\n## Notes\n",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Snake_case ID used as the filename and in [[wikilinks]]",
+      "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$"
+    },
+    "collection": {
+      "type": "string",
+      "const": "os",
+      "description": "Node type — used by Obsidian-style apps to filter nodes by collection"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the OS including version or codename where applicable"
+    },
+    "family": {
+      "type": "string",
+      "description": "Kernel lineage / ecosystem. android is separate from linux despite sharing the kernel — it has a distinct userspace and ecosystem.",
+      "enum": ["linux", "unix", "windows", "bsd", "android", "other"]
+    },
+    "form_factor": {
+      "type": "string",
+      "description": "Runtime environment and deployment context",
+      "enum": ["desktop", "server", "mobile", "embedded"]
+    },
+    "version": {
+      "description": "Version string as displayed in official docs (e.g. '22.04', 'Ventura', '11')",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "arch": {
+      "description": "CPU architectures supported (e.g. x86_64, arm64, riscv64)",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        { "type": "null" }
+      ]
+    },
+    "kernel": {
+      "description": "Kernel version shipped with this OS release (snapshot, not live)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "package_manager": {
+      "description": "Default system package manager (e.g. apt, dnf, brew, winget)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "eol": {
+      "description": "End-of-life date in ISO format (YYYY-MM-DD). Null for rolling-release or unknown.",
+      "oneOf": [
+        { "type": "string", "format": "date" },
+        { "type": "null" }
+      ]
+    },
+    "lts": {
+      "description": "Whether this is a long-term support release",
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "null" }
+      ]
+    },
+    "tools": {
+      "type": "array",
+      "description": "[[wikilink]] references to tool nodes that support this OS",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form keywords for cross-cutting themes",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": []
+    }
+  }
+}
