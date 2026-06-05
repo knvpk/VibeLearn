@@ -70,10 +70,10 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 
 Schema paths are hardcoded — never read from config:
-`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`, `schemas/company.json`
+`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`, `schemas/company.json`, `schemas/os.json`
 
 Body-section schemas (resolved via `$ref` from each top-level schema):
-`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`, `schemas/content/language.json`, `schemas/content/company.json`
+`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`, `schemas/content/language.json`, `schemas/content/company.json`, `schemas/content/os.json`
 
 Then derive the state directory (hardcoded, not in config):
 - `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
@@ -100,6 +100,7 @@ Three content layers:
 - Ideas: `{wiki.root}ideas/<id>.md` — raw or evolving thoughts that may be promoted to a concept, workflow, or project
 - Collections: `{wiki.root}collections/<id>.md` — named groups of source URLs ingested together; aggregates source and concept nodes across all items
 - Languages: `{wiki.root}languages/<id>.md` — programming language nodes with execution model, package managers, bundlers, and version history
+- OSes: `{wiki.root}os/<id>.md` — operating system nodes with family, form factor, architecture, EOL, and back-links to tools
 
 **Navigation files**:
 - `{wiki.root}index.md` — full concept map with `[[wikilinks]]`, organized by phase, plus a `## Terms` section listing all term IDs. The LLM reads this to check what exists and navigate the graph.
