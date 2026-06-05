@@ -546,7 +546,7 @@ The schema is the single source of truth for structure and examples.
 
 ### Behavioral rules by node type
 
-**Author**: Only record opinions the user explicitly states — never infer. When new and `{ingest.auto_propose_author}` is `true`: ask "That article is by [Name]. Should I add them to your wiki? If so, what's your take on them?" — wait for confirmation and opinion before writing. If `false`, skip silently.
+**Author**: Only record opinions the user explicitly states — never infer. When new and `{ingest.auto_propose_author}` is `true`: ask "That article is by [Name]. Should I add them to your wiki? If so, what's your take on them?" — wait for confirmation and opinion before writing. If `false`, skip silently. The `company` field must be a `[[wikilink]]` to a company node — never a plain string. If the company node does not yet exist, offer to create it before writing the author.
 
 **Tool**: `sources` holds every URL known for the tool — the ingest URL goes here, not in `url`. `url` is reserved for the canonical homepage/docs. Only record `verdict`, `pros`, and `cons` from explicit user opinion, never infer. Surface stored opinions when relevant: "You marked this as 'avoid' — want to proceed anyway?" Prompt once per session per tool.
 
