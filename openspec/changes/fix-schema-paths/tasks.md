@@ -1,6 +1,6 @@
 ## 1. Add SKILL_DIR probe and startup guard
 
-- [ ] 1.1 In `SKILL.md`, locate the startup block (where config is read and state files are derived). Add before the first schema read:
+- [x] 1.1 In `SKILL.md`, locate the startup block (where config is read and state files are derived). Add before the first schema read:
   ```
   Locate SKILL_DIR at startup by probing in order:
     1. If .agents/skills/vibe_learn/assets/schemas/concept.json is readable
@@ -16,12 +16,12 @@
 
 ## 2. Replace all bare schema path references
 
-- [ ] 2.1 Replace all 27 occurrences of `schemas/` in `SKILL.md` with `{SKILL_DIR}/assets/schemas/`
-  - Verify: `grep -c 'schemas/' SKILL.md` returns 0 after replacement
-  - Verify: `grep -c '{SKILL_DIR}/assets/schemas/' SKILL.md` returns 27
+- [x] 2.1 Replace all 48 occurrences of `schemas/` in `SKILL.md` with `{SKILL_DIR}/assets/schemas/`
+  - Verify: `grep -n 'schemas/' SKILL.md | grep -v '{SKILL_DIR}/assets/schemas/'` returns only the 2 probe sentinel lines (74–75) which are correct
+  - Verify: `grep -c '{SKILL_DIR}/assets/schemas/' SKILL.md` returns 50
 
 ## 3. Verify
 
-- [ ] 3.1 Run `grep 'schemas/' SKILL.md` — must return no matches (all replaced)
-- [ ] 3.2 Run `grep '{SKILL_DIR}/assets/schemas/' SKILL.md` — must return exactly 27 matches
-- [ ] 3.3 Read the startup block section of `SKILL.md` and confirm the probe is present and ordered correctly (project-level first, global second, error third) before the first schema read
+- [x] 3.1 All bare `schemas/` references replaced; only the 2 probe sentinel paths on lines 74–75 remain outside the `{SKILL_DIR}` prefix
+- [x] 3.2 `{SKILL_DIR}/assets/schemas/` appears 50 times in SKILL.md
+- [x] 3.3 Startup block confirmed: probe on lines 73–76, ordered project-level first, global second, error third, before any schema read

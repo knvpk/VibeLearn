@@ -70,16 +70,21 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `examples.*` — language, framework, and idiomatic patterns for code examples
 - `obsidian.enabled` — whether to generate Obsidian Bases files; treat a missing key as `false`
 
+**Locate SKILL_DIR** before any schema read, probing in order:
+1. If `.agents/skills/vibe_learn/assets/schemas/concept.json` is readable → `SKILL_DIR = .agents/skills/vibe_learn`
+2. Else if `~/.agents/skills/vibe_learn/assets/schemas/concept.json` is readable → `SKILL_DIR = ~/.agents/skills/vibe_learn`
+3. Else → print `Schema files not found. Re-install with: npx skills add knvpk/VibeLearn` (project) or `npx skills add knvpk/VibeLearn --global` (global) and stop.
+
 Schema paths are hardcoded — never read from config:
-`schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`, `schemas/company.json`, `schemas/os.json`
+`{SKILL_DIR}/assets/schemas/concept.json`, `{SKILL_DIR}/assets/schemas/source.json`, `{SKILL_DIR}/assets/schemas/author.json`, `{SKILL_DIR}/assets/schemas/tool.json`, `{SKILL_DIR}/assets/schemas/workflow.json`, `{SKILL_DIR}/assets/schemas/term.json`, `{SKILL_DIR}/assets/schemas/idea.json`, `{SKILL_DIR}/assets/schemas/collection.json`, `{SKILL_DIR}/assets/schemas/language.json`, `{SKILL_DIR}/assets/schemas/company.json`, `{SKILL_DIR}/assets/schemas/os.json`
 
 Body-section schemas (resolved via `$ref` from each top-level schema):
-`schemas/content/concept.json`, `schemas/content/source.json`, `schemas/content/author.json`, `schemas/content/tool.json`, `schemas/content/workflow.json`, `schemas/content/idea.json`, `schemas/content/collection.json`, `schemas/content/language.json`, `schemas/content/company.json`, `schemas/content/os.json`
+`{SKILL_DIR}/assets/schemas/content/concept.json`, `{SKILL_DIR}/assets/schemas/content/source.json`, `{SKILL_DIR}/assets/schemas/content/author.json`, `{SKILL_DIR}/assets/schemas/content/tool.json`, `{SKILL_DIR}/assets/schemas/content/workflow.json`, `{SKILL_DIR}/assets/schemas/content/idea.json`, `{SKILL_DIR}/assets/schemas/content/collection.json`, `{SKILL_DIR}/assets/schemas/content/language.json`, `{SKILL_DIR}/assets/schemas/content/company.json`, `{SKILL_DIR}/assets/schemas/content/os.json`
 
 Then derive the state directory (hardcoded, not in config):
-- `{wiki.root}.state/_plan.json` — curriculum structure (schema: `schemas/state/plan.json`)
-- `{wiki.root}.state/_progress.json` — learning state (schema: `schemas/state/progress.json`)
-- `{wiki.root}.state/_log.json` — operation log (schema: `schemas/state/log.json`)
+- `{wiki.root}.state/_plan.json` — curriculum structure (schema: `{SKILL_DIR}/assets/schemas/state/plan.json`)
+- `{wiki.root}.state/_progress.json` — learning state (schema: `{SKILL_DIR}/assets/schemas/state/progress.json`)
+- `{wiki.root}.state/_log.json` — operation log (schema: `{SKILL_DIR}/assets/schemas/state/log.json`)
 
 Read the relevant schema before writing any state file, just as you do for content files.
 
@@ -126,7 +131,7 @@ When asked about a concept:
 6. If you introduce jargon that has a term node in `{wiki.root}terms/`, inline it as `[[<term_id>]]`; if no term node exists yet, offer to create one after the explanation
 
 **Save trigger** — when the learner confirms understanding ("got it", "makes sense", answers a check question correctly, or explicitly moves on):
-- Write/update `{wiki.root}concepts/<id>/<id>.md` — read `schemas/concept.json` first (content fields only; no progress in frontmatter)
+- Write/update `{wiki.root}concepts/<id>/<id>.md` — read `{SKILL_DIR}/assets/schemas/concept.json` first (content fields only; no progress in frontmatter)
 - Read `{wiki.root}.state/_progress.json`, update the concept entry: set `status` (`Not started` → `In progress` → `Done`), `started_at` on first teach, `completed_at` when Done; on Done also set `last_reviewed: null` and `review_due` to `completed_at` + 7 days; write the file back
 - Briefly confirm: "Saved. Ready for the next one?"
 
@@ -141,7 +146,7 @@ When the user says "next topic", "what's next", "continue", etc.:
 
 ## concept <id>.md structure
 
-Read `schemas/concept.json` before writing. Use `x-file-example` in the schema as the rendering template. All frontmatter fields are required.
+Read `{SKILL_DIR}/assets/schemas/concept.json` before writing. Use `x-file-example` in the schema as the rendering template. All frontmatter fields are required.
 
 **Folder rules**:
 - Flat — no nesting. Even subtopics of other concepts get sibling folders. Relationships live in `related_concepts` wikilinks, not folder hierarchy.
@@ -151,7 +156,7 @@ Read `schemas/concept.json` before writing. Use `x-file-example` in the schema a
 
 When the user asks to "walk through", "run", "show me how to", or "do" a workflow:
 
-1. Read `{wiki.root}workflows/<id>.md` — read `schemas/workflow.json` for the frontmatter structure
+1. Read `{wiki.root}workflows/<id>.md` — read `{SKILL_DIR}/assets/schemas/workflow.json` for the frontmatter structure
 2. Read `{wiki.root}.state/_progress.json`; for each entry in `prerequisites`, check that concept's `status` field
 3. If any prerequisite is `Not started` or `In progress`: warn — "Before running [[<workflow_id>]], you should finish [[<concept_id>]]. Want me to teach it first?" Wait for the user's choice.
 4. If all prerequisites are `Done`: present the workflow one step at a time
@@ -168,7 +173,7 @@ When the user asks "define X", "what does X mean", "what is X", or "explain the 
 
 1. Check `{wiki.root}terms/<inferred_id>.md` — if it exists, display the definition and its `related_concepts` wikilinks
 2. If not found, check `{wiki.root}concepts/` — if a full concept exists, teach it via the Teaching flow instead
-3. If neither exists: give a one-sentence definition, then offer "Want me to save this as a term node?" — if yes, write `{wiki.root}terms/<id>.md` (read `schemas/term.json` first) and add `[[<term_id>]]` to `index.md` under `## Terms`
+3. If neither exists: give a one-sentence definition, then offer "Want me to save this as a term node?" — if yes, write `{wiki.root}terms/<id>.md` (read `{SKILL_DIR}/assets/schemas/term.json` first) and add `[[<term_id>]]` to `index.md` under `## Terms`
 4. If the term surfaced during a teaching session, link it inline in the concept body without prompting
 
 ## Ingest
@@ -227,7 +232,7 @@ Also trigger manual collection ingest if the user provides a `[[collection_id]]`
 ### Step 2b — Extract terms
 1. Scan the source for defined vocabulary: glossary entries, acronyms, domain terms introduced with a formal definition marker ("is", "refers to", "means")
 2. For each candidate term:
-   - If `{wiki.root}terms/<id>.md` **exists**: add `[[<source_id>]]` to its `sources` array (read `schemas/term.json` first)
+   - If `{wiki.root}terms/<id>.md` **exists**: add `[[<source_id>]]` to its `sources` array (read `{SKILL_DIR}/assets/schemas/term.json` first)
    - If it **does not exist**: include in the Step 2 mapping confirmation — "I also found these new terms: [X, Y]. Should I create term nodes for them?"
 3. Wait for confirmation before creating any new term node
 4. Add confirmed term IDs as `[[wikilinks]]` to the `terms` array in the source node (Step 4)
@@ -242,7 +247,7 @@ For each matched concept:
 - Link any new split files from `<id>.md`
 
 ### Step 4 — Create source node
-Write `{wiki.root}sources/<id>.md` — read `schemas/source.json` first. Use `[[wikilinks]]` for `author` and `concepts` fields.
+Write `{wiki.root}sources/<id>.md` — read `{SKILL_DIR}/assets/schemas/source.json` first. Use `[[wikilinks]]` for `author` and `concepts` fields.
 
 ### Step 5 — Update author node
 Check `{wiki.root}authors/<author_id>.md`:
@@ -305,7 +310,7 @@ Each item produces its own node. Keep a running list of all `source_id` and `too
 If any item is inaccessible, note it and continue — report failed items at the end.
 
 ### Step CX4 — Write the collection node
-Read `schemas/collection.json` and `schemas/content/collection.json`.
+Read `{SKILL_DIR}/assets/schemas/collection.json` and `{SKILL_DIR}/assets/schemas/content/collection.json`.
 
 If `{wiki.root}collections/<id>.md` **does not exist**:
 - Infer `id` from the catalog title (snake_case)
@@ -362,7 +367,7 @@ Wait for confirmation. If total new concepts exceed `{ingest.max_concepts_before
 For each confirmed item, run Steps 1c–5 (tool detection, workflow detection, concept mapping, term extraction, enrichment, source node, author node). Each item produces its own node.
 
 ### Step C4 — Write the collection node
-Read `schemas/collection.json` and `schemas/content/collection.json`.
+Read `{SKILL_DIR}/assets/schemas/collection.json` and `{SKILL_DIR}/assets/schemas/content/collection.json`.
 
 If `{wiki.root}collections/<id>.md` **does not exist**: infer `id` from a user-supplied title or ask. Write with `catalog_type: manual`, `items`, `sources`, `concepts`, `date_ingested`.
 
@@ -424,16 +429,16 @@ This table is the authority for all lint phases. A node's `collection` value det
 
 | `collection` value | directory under `{wiki.root}` | schema |
 |---|---|---|
-| `concept` | `concepts/<id>/` (folder + `<id>.md` entry) | `schemas/concept.json` |
-| `source` | `sources/<id>.md` | `schemas/source.json` |
-| `author` | `authors/<id>.md` | `schemas/author.json` |
-| `tool` | `tools/<id>.md` | `schemas/tool.json` |
-| `workflow` | `workflows/<id>.md` | `schemas/workflow.json` |
-| `term` | `terms/<id>.md` | `schemas/term.json` |
-| `idea` | `ideas/<id>.md` | `schemas/idea.json` |
-| `language` | `languages/<id>.md` | `schemas/language.json` |
-| `collection` | `collections/<id>.md` | `schemas/collection.json` |
-| `company` | `companies/<id>.md` | `schemas/company.json` |
+| `concept` | `concepts/<id>/` (folder + `<id>.md` entry) | `{SKILL_DIR}/assets/schemas/concept.json` |
+| `source` | `sources/<id>.md` | `{SKILL_DIR}/assets/schemas/source.json` |
+| `author` | `authors/<id>.md` | `{SKILL_DIR}/assets/schemas/author.json` |
+| `tool` | `tools/<id>.md` | `{SKILL_DIR}/assets/schemas/tool.json` |
+| `workflow` | `workflows/<id>.md` | `{SKILL_DIR}/assets/schemas/workflow.json` |
+| `term` | `terms/<id>.md` | `{SKILL_DIR}/assets/schemas/term.json` |
+| `idea` | `ideas/<id>.md` | `{SKILL_DIR}/assets/schemas/idea.json` |
+| `language` | `languages/<id>.md` | `{SKILL_DIR}/assets/schemas/language.json` |
+| `collection` | `collections/<id>.md` | `{SKILL_DIR}/assets/schemas/collection.json` |
+| `company` | `companies/<id>.md` | `{SKILL_DIR}/assets/schemas/company.json` |
 
 When the user asks to "lint", "health check", or "migrate wiki":
 
@@ -450,7 +455,7 @@ When the user asks to "lint", "health check", or "migrate wiki":
 
 For each node file, using the collection map to select the schema:
 
-1. Read `schemas/<collection>.json`
+1. Read `{SKILL_DIR}/assets/schemas/<collection>.json`
 2. Check all `required` fields from the schema are present in the node's frontmatter. Report any missing.
 3. If the schema has `"additionalProperties": false`: check for frontmatter fields NOT in the schema's `properties`. Report each as "unknown field — schema drift".
 4. Validate the `collection` const: the schema declares `"const": "<type>"` on the `collection` property. If the frontmatter value doesn't match, flag it.
@@ -492,7 +497,7 @@ Print findings as a numbered checklist grouped by phase:
 
 ### Phase 2 — Schema compliance
   [3] concepts/attention/attention.md — missing required field: difficulty
-  [4] tools/pytorch.md — unknown field: language (not in schemas/tool.json)
+  [4] tools/pytorch.md — unknown field: language (not in {SKILL_DIR}/assets/schemas/tool.json)
 
 ### Phase 3 — Graph integrity
   [5] Orphan concept folder: positional_encoding/ not listed in _plan.json
@@ -537,14 +542,14 @@ Append to `{wiki.root}.state/_log.json`:
 
 Before writing or updating **any** node file:
 
-1. Read the relevant `schemas/<type>.json`
+1. Read the relevant `{SKILL_DIR}/assets/schemas/<type>.json`
 2. Build YAML frontmatter from its `properties` — required fields must be present; optional fields only if you have the data
 3. Use `x-file-example` in the schema as the full rendering template
 4. If `x-body-sections` is present, read the referenced `content/<type>.json` for section order and per-section ingest rules (in each property's `description`) — follow them literally:
    - "Write once on creation; do not overwrite" — write on creation only, never touch again on re-ingest
    - "Append new bullets; never duplicate" — add new items below existing ones, skip exact matches
    - "Append paragraphs; preserve existing text" — add below existing content, never clobber
-5. Schemas with **no** `x-body-sections` (e.g. `schemas/term.json`) produce frontmatter-only files
+5. Schemas with **no** `x-body-sections` (e.g. `{SKILL_DIR}/assets/schemas/term.json`) produce frontmatter-only files
 
 The schema is the single source of truth for structure and examples.
 
