@@ -524,6 +524,8 @@ When the user says yes (by number, range, or "all"), apply fixes by category:
 
 After applying fixes, print a delta: "Fixed N of M issues. K remaining require manual action."
 
+**Obsidian Bases check** — if `obsidian.enabled` is `true`: for every `collection` value in the collection map, check if `{wiki.root}bases/<collection>.base` exists. Write any missing `.base` files using the specs in `references/obsidian_bases.md`. Report: "Created N Obsidian base file(s): [list]" — or nothing if all already exist.
+
 Append to `{wiki.root}.state/_log.json`:
 ```json
 { "date": "<ISO date>", "operation": "lint", "issues_found": 8, "schema_issues": 3, "graph_issues": 5, "issues_fixed": 5 }
