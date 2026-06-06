@@ -52,3 +52,10 @@ ingest:
 output:
   # Default format for all diagrams
   diagram_format: mermaid   # "mermaid" | "d2" | "svg"
+
+# Set enabled: true if you open this wiki in Obsidian.
+# When enabled, the skill generates a .base file for each node type under
+# {wiki.root}bases/ the first time a node of that type is written.
+# These files power Obsidian Bases database views with zero ongoing maintenance.
+obsidian:
+  enabled: false
