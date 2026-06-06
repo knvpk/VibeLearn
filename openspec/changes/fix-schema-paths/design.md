@@ -1,51 +1,54 @@
 ## Context
 
-`SKILL.md` is a plain-text instruction file for Claude Code. It has no runtime variable system — but it can define a constant in prose that Claude treats as a substitution variable throughout the document. The goal is to fix 27 hardcoded `schemas/` paths while avoiding 27-line churn by centralising the install path in one place.
+`SKILL.md` is a plain-text instruction file for Claude Code. It has no runtime variable system — but Claude can follow prose instructions to probe the filesystem at startup and derive a path. The goal is to fix 27 hardcoded `schemas/` paths while handling both project-level and global installs.
+
+`npx skills add` installs to two possible locations depending on scope:
+- **Project-level**: `.agents/skills/vibe_learn/` (relative to project root)
+- **Global**: `~/.agents/skills/vibe_learn/` (relative to home directory)
+
+A hardcoded constant works for one scope but breaks the other.
 
 ## Goals / Non-Goals
 
 **Goals:**
-- Schema reads work immediately after `npx skills add knvpk/VibeLearn` with zero manual setup.
-- Single point of truth for the install path — one edit if the path ever changes.
-- Clear error message when schemas are missing.
+- Schema reads work after both `npx skills add knvpk/VibeLearn` and `npx skills add knvpk/VibeLearn --global`.
+- Single probe at startup sets `SKILL_DIR` once — all 27 references reuse it.
+- Clear error message when schemas are missing at either location.
 
 **Non-Goals:**
-- Supporting multiple install locations or dynamic path resolution at runtime.
+- Supporting custom install paths beyond what `npx skills` produces.
 - Changing any schema file content.
 - Adding shell scripts or package.json scripts.
 
 ## Decisions
 
-### D1 — Define `SKILL_DIR` as a prose constant in the startup block
+### D1 — Probe at startup, not a hardcoded constant
 
-**Decision**: Add this line to the startup block:
+**Decision**: Replace the fixed `SKILL_DIR = <path>` with a startup probe:
 
 ```
-SKILL_DIR = .agents/skills/vibe_learn
+Check .agents/skills/vibe_learn/assets/schemas/concept.json    → project-level
+Check ~/.agents/skills/vibe_learn/assets/schemas/concept.json  → global
+Set SKILL_DIR to whichever resolves first; error if neither.
 ```
 
-Then write all schema paths as `{SKILL_DIR}/assets/schemas/<type>.json`.
+**Rationale**: A hardcoded path only works for one install scope. The probe adds one `if/else` in prose instructions; Claude handles this naturally. Project-level is checked first so it takes precedence over a global install in the same environment.
 
-**Rationale**: Claude follows prose instructions literally. A single declared constant at the top is equivalent to a variable — Claude will substitute it wherever it appears. This gives us one place to update the path without touching 27 call sites.
+**Alternative rejected**: Hardcode `.agents/skills/vibe_learn`. Works for project installs only — global installs at `~/.agents/` would always fail.
 
-**Alternative rejected**: Replace all 27 occurrences with the literal full path (`.agents/skills/vibe_learn/assets/schemas/...`). Works, but creates 27 places to update if the install path changes, and makes the file visually noisy.
+### D2 — Use `.agents/` paths, not `.claude/` symlinks
 
-### D2 — Use `.agents/skills/vibe_learn` (the real install location)
+**Decision**: Probe `.agents/skills/vibe_learn` and `~/.agents/skills/vibe_learn`, not their `.claude/` symlink equivalents.
 
-**Decision**: The constant points to the real install at `.agents/skills/vibe_learn`, not the `.claude/` symlink.
-
-**Rationale**: `.agents/skills/vibe_learn` is where `npx skills` actually writes the files. Using the real path avoids any symlink resolution ambiguity and is consistent with how `npx skills` manages the install directory.
+**Rationale**: `.agents/` is the real install location `npx skills` writes to. `.claude/skills/vibe_learn` is a symlink that resolves to `../../.agents/skills/vibe_learn` — using the real path is simpler and avoids any symlink resolution ambiguity.
 
 ### D3 — Guard on missing schemas in startup, not on every read
 
-**Decision**: One readability check at startup:
-```
-If {SKILL_DIR}/assets/schemas/concept.json is not readable → emit error + halt
-```
+**Decision**: One probe at startup checks `concept.json` as a sentinel. If it's not readable, emit a scoped error message and halt.
 
-**Rationale**: Failing fast at startup with a clear message is better than failing silently on the first schema read mid-session. A single check on `concept.json` is sufficient — if the skill is installed, all schemas are present; if it isn't, none are.
+**Rationale**: Failing fast at startup with a clear message is better than a cryptic failure mid-session on the first schema read. Checking `concept.json` is sufficient — if the skill is installed, all schemas are present.
 
 ## Risks / Trade-offs
 
-- **`.agents/skills/vibe_learn` is still a hardcoded path** — if the user renames the skill or installs it differently, the path breaks. Acceptable: `npx skills` always uses the `name` field from `skill.json` (`vibe_learn`) as the directory name, so this is stable.
-- **Symlink resolution** — Claude resolves file paths; symlinks are transparent to `Read`. No issue.
+- **Custom install paths not supported** — if a user runs `npx skills add` with a non-default base directory, neither candidate will match. Acceptable: non-default paths are an edge case not covered by `skill.json`.
+- **Project-level takes precedence** — if both a project install and a global install exist, the project one wins. This matches typical developer expectations (local overrides global).

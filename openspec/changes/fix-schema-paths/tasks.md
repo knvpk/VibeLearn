@@ -1,10 +1,18 @@
-## 1. Add SKILL_DIR constant and startup guard
+## 1. Add SKILL_DIR probe and startup guard
 
-- [ ] 1.1 In `SKILL.md`, locate the startup block (where config is read and state files are derived). Add immediately after the first `##` heading or before the first file-read instruction:
+- [ ] 1.1 In `SKILL.md`, locate the startup block (where config is read and state files are derived). Add before the first schema read:
   ```
-  SKILL_DIR = .agents/skills/vibe_learn
+  Locate SKILL_DIR at startup by probing in order:
+    1. If .agents/skills/vibe_learn/assets/schemas/concept.json is readable
+       → SKILL_DIR = .agents/skills/vibe_learn
+    2. Else if ~/.agents/skills/vibe_learn/assets/schemas/concept.json is readable
+       → SKILL_DIR = ~/.agents/skills/vibe_learn
+    3. Else → print:
+         Schema files not found. Re-install with:
+           project: npx skills add knvpk/VibeLearn
+           global:  npx skills add knvpk/VibeLearn --global
+       and stop.
   ```
-- [ ] 1.2 Add a guard below the constant: if `{SKILL_DIR}/assets/schemas/concept.json` is not readable, print `Schema files not found at {SKILL_DIR}/assets/schemas/. Re-install with: npx skills add knvpk/VibeLearn` and stop.
 
 ## 2. Replace all bare schema path references
 
@@ -16,4 +24,4 @@
 
 - [ ] 3.1 Run `grep 'schemas/' SKILL.md` — must return no matches (all replaced)
 - [ ] 3.2 Run `grep '{SKILL_DIR}/assets/schemas/' SKILL.md` — must return exactly 27 matches
-- [ ] 3.3 Read the startup block section of `SKILL.md` and confirm `SKILL_DIR` constant and guard are present and correctly placed before the first schema read
+- [ ] 3.3 Read the startup block section of `SKILL.md` and confirm the probe is present and ordered correctly (project-level first, global second, error third) before the first schema read

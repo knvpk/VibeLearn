@@ -15,27 +15,33 @@ schemas/state/plan.json
 ... (27 total occurrences)
 ```
 
-Claude resolves these relative to cwd (the user's project root). There is no `schemas/` folder at the project root after a `npx skills add` install — schemas are at `.claude/skills/vibe_learn/assets/schemas/`.
+Claude resolves these relative to cwd (the user's project root). There is no `schemas/` folder at the project root after a `npx skills add` install — schemas are at `<install-dir>/assets/schemas/`, which varies by install scope.
 
 ## After
 
-The startup block derives `SKILL_DIR` once:
+The startup block probes for `SKILL_DIR` by checking two candidate paths in order:
 
 ```
-SKILL_DIR = .agents/skills/vibe_learn
+1. .agents/skills/vibe_learn          (project-level install, relative to project root)
+2. ~/.agents/skills/vibe_learn        (global install, relative to home directory)
 ```
 
-All 27 schema path references are updated to `{SKILL_DIR}/assets/schemas/<type>.json`.
+The first candidate whose `assets/schemas/concept.json` is readable becomes `SKILL_DIR`.
 
-The startup section also gains a guard: if `{SKILL_DIR}/assets/schemas/concept.json` is not readable, emit a one-line error:
+If neither resolves, emit:
 ```
-Schema files not found at {SKILL_DIR}/assets/schemas/. Re-install with: npx skills add knvpk/VibeLearn
+Schema files not found. Re-install with:
+  project: npx skills add knvpk/VibeLearn
+  global:  npx skills add knvpk/VibeLearn --global
 ```
 and halt.
 
+All 27 schema path references are updated to `{SKILL_DIR}/assets/schemas/<type>.json`.
+
 ## Constraints
 
-- `SKILL_DIR` is a fixed string constant in the skill text — it is NOT derived at runtime from the filesystem. The value is always `.claude/skills/vibe_learn`.
-- The path uses `.agents/skills/vibe_learn` — the real install location written by `npx skills`.
+- The probe runs once at startup before any schema read — not on every read.
+- Probe order is project-first: a project-level install takes precedence over a global one.
+- `SKILL_DIR` is set to the resolved path and reused for all 27 references.
 - No other files change.
-- The 27 replacements are purely textual — no logic changes.
+- The 27 path replacements are purely textual — no logic changes beyond the probe.
