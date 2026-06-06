@@ -9,13 +9,49 @@
       "id": "table",
       "type": "table",
       "name": "Tools — All",
-      "columns": ["name", "category", "maturity", "docker"]
+      "columns": ["name", "category", "maturity", "verdict", "docker", "cloud", "license"]
     },
     {
-      "id": "board",
+      "id": "board-category",
       "type": "board",
       "name": "Tools — By Category",
       "groupBy": "category"
+    },
+    {
+      "id": "board-maturity",
+      "type": "board",
+      "name": "Tools — By Maturity",
+      "groupBy": "maturity"
+    },
+    {
+      "id": "board-verdict",
+      "type": "board",
+      "name": "Tools — By Verdict",
+      "groupBy": "verdict"
+    },
+    {
+      "id": "board-language",
+      "type": "board",
+      "name": "Tools — By Language",
+      "groupBy": "languages.name"
+    },
+    {
+      "id": "board-platforms",
+      "type": "board",
+      "name": "Tools — By Platform",
+      "groupBy": "supported_platforms"
+    },
+    {
+      "id": "board-docker",
+      "type": "board",
+      "name": "Tools — Docker Available",
+      "groupBy": "docker"
+    },
+    {
+      "id": "board-cloud",
+      "type": "board",
+      "name": "Tools — Cloud Hosted",
+      "groupBy": "cloud"
     }
   ]
 }
