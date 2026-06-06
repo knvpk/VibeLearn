@@ -56,9 +56,43 @@ Print this reference and nothing else:
 
 ### Help
   help / commands                         → show this reference
+
+### Customization
+  generate schema <type>                  → scaffold a new node type schema in {wiki.root}.schemas/
 ```
 
 Do not add any preamble or follow-up — output the block above, then stop.
+
+## Generate Schema
+
+When the user says "generate schema <type>" or "create schema <type>":
+
+1. Ask: "What folder should `<type>` nodes live in? (e.g. `papers`, `cases`)" — wait for answer → `collection`
+2. Ask: "What required fields does a `<type>` have, besides `id`? (comma-separated, or none)" — wait for answer → `required_fields`
+3. Ask: "Any optional fields? (comma-separated, or none)" — wait for answer → `optional_fields`
+4. Ask: "What content sections should each `<type>` node have? (comma-separated, e.g. `summary,key_findings,connections`)" — wait for answer → `sections`
+5. Resolve `additional_schemas_path` (same logic as Startup: `wiki.additional_schemas` config key, default `{wiki.root}.schemas/`). Create the folder if it does not exist.
+6. Write `{additional_schemas_path}/<type>.json`:
+
+```json
+{
+  "$schema": "vibe_learn/schema/v1",
+  "type": "<type>",
+  "collection": "<collection>",
+  "fields": {
+    "id": { "type": "string", "required": true },
+    "<each required_field>": { "type": "string", "required": true },
+    "<each optional_field>": { "type": "string", "required": false }
+  },
+  "content": {
+    "sections": ["<section1>", "..."]
+  }
+}
+```
+
+7. Confirm: "Schema saved to `{additional_schemas_path}/<type>.json`. Create your first `<type>` with: `create <type> <id>`"
+
+Do not start a new session or reload — the schema takes effect next session (startup re-reads the folder).
 
 ## Startup
 
@@ -88,6 +122,16 @@ Then derive the state directory (hardcoded, not in config):
 
 Read the relevant schema before writing any state file, just as you do for content files.
 
+**Load custom schemas** after built-in schemas:
+1. Resolve `additional_schemas_path`: use `wiki.additional_schemas` from config if set (relative to `wiki.root`); otherwise default to `{wiki.root}.schemas/`
+2. If `additional_schemas_path` does not exist, skip silently — no warning
+3. For each `*.json` file found in `additional_schemas_path`:
+   - Validate: `fields.id` with `required: true` must be present, and `collection` must be a non-empty string
+   - If either is missing: print `Custom schema <filename> skipped: missing required "id" field or "collection"` and skip
+   - If the schema's `type` value matches any built-in type name (concept, source, author, tool, workflow, term, idea, collection, language, company, os): print `Custom schema <filename> skipped: type "<type>" shadows a built-in type` and skip
+   - Otherwise: register the type → `{ collection, fields, content.sections }` in the known-types registry alongside built-in types
+4. From this point, built-in and custom types are treated identically in all operations (create, ingest, lint, index, Obsidian Bases)
+
 If `vibe_learn.config.yaml` is missing, ask the user to create one before proceeding.
 If any `.state/` file does not exist, offer to create it from the starter templates.
 
@@ -109,7 +153,7 @@ Three content layers:
 - OSes: `{wiki.root}os/<id>.md` — operating system nodes with family, form factor, architecture, EOL, and back-links to tools
 
 **Navigation files**:
-- `{wiki.root}index.md` — full concept map with `[[wikilinks]]`, organized by phase, plus a `## Terms` section listing all term IDs. The LLM reads this to check what exists and navigate the graph.
+- `{wiki.root}index.md` — full concept map with `[[wikilinks]]`, organized by phase, plus a `## Terms` section listing all term IDs, plus one `## <Type>s` section per custom type registered from `{additional_schemas_path}` (generated and updated using the same wikilink convention). The LLM reads this to check what exists and navigate the graph. When writing or updating `index.md`, iterate the known-types registry (built-in + custom) — do not enumerate type names in code.
 
 **State files** (hardcoded at `{wiki.root}.state/` — never in config):
 - `_plan.json` — phase ordering, concept sequence, durations, prerequisites
@@ -167,6 +211,18 @@ When the user asks to "walk through", "run", "show me how to", or "do" a workflo
    { "date": "<ISO date>", "operation": "workflow", "id": "<id>", "name": "<workflow name>", "prerequisites_met": true, "steps_completed": 3 }
    ```
 
+## Create
+
+When the user says "create <type> <id>" or "new <type> <id>":
+
+1. Look up `<type>` in the known-types registry (built-in and custom). If not found, say "Unknown type `<type>`. Run `generate schema <type>` to define it."
+2. Resolve the node path: `{wiki.root}{collection}/<id>.md` where `collection` comes from the registry entry.
+3. If the node already exists, say "A `<type>` node with id `<id>` already exists at `{path}`. Want to open or edit it instead?"
+4. For built-in types: read the schema from `{SKILL_DIR}/assets/schemas/<type>.json` and use its `x-file-example` as the template.
+5. For custom types: build frontmatter from the schema's `fields` (required fields as empty strings, optional fields omitted), and write H2 sections in the order listed in `content.sections`.
+6. Create the parent directory if it does not exist.
+7. Write the file and confirm: "Created `{path}`. Edit the frontmatter fields and fill in the sections."
+
 ## Define
 
 When the user asks "define X", "what does X mean", "what is X", or "explain the term X" for a vocabulary item:
@@ -215,10 +271,19 @@ If `{ingest.detect_workflows}` is not `never` and the source is a how-to, tutori
 - If none exists: propose a new workflow node with the suggested ID and prerequisites — ask before creating
 Map the source to the workflow's `sources` array in addition to any concept `sources` arrays.
 
-### Step 1e — Detect multiple URLs (manual collection ingest)
+### Step 1e — Detect custom node types
+After Steps 1b–1d, if no built-in type was matched, check the known-types registry for custom types:
+- For each custom type in the registry, compare the ingested content's structure (field names, section headings) against the schema's `fields` definitions
+- If fields from the content closely match a custom type's required fields (≥ 50% of required fields present), propose: "This looks like a `<type>` node. Should I map it as a `<type>` instead of a generic source?" — wait for confirmation
+- On confirmation, create a custom type node (via the Create handler) and skip the standard source node creation
+- If no custom type matches, proceed to Step 2 as normal
+
+### Step 1f — Detect multiple URLs (manual collection ingest)
 If the user provides **two or more URLs at once** (in a single message, as a newline-separated list, or as a named reading list), treat it as a **collection ingest** — go to **Ingest a collection** below instead of running Steps 1–6 per URL independently.
 
 Also trigger manual collection ingest if the user provides a `[[collection_id]]` wikilink or a path to an existing `{wiki.root}collections/<id>.md` file.
+
+(This step was previously Step 1e — renumbered to Step 1f to accommodate custom type detection.)
 
 ### Step 2 — Map to existing concepts
 1. Read `{wiki.root}index.md` to find best-fit concepts
@@ -440,6 +505,8 @@ This table is the authority for all lint phases. A node's `collection` value det
 | `collection` | `collections/<id>.md` | `{SKILL_DIR}/assets/schemas/collection.json` |
 | `company` | `companies/<id>.md` | `{SKILL_DIR}/assets/schemas/company.json` |
 
+The collection map above covers built-in types. Custom types registered from `{additional_schemas_path}` are appended to this map at startup — their `collection` value comes from the schema file, their directory is `{wiki.root}{collection}/`, and their schema is the custom JSON file itself.
+
 When the user asks to "lint", "health check", or "migrate wiki":
 
 ### Phase 1 — Directory structure
@@ -483,6 +550,7 @@ For each node file, using the collection map to select the schema:
    - Collection nodes whose `sources` array references a source ID with no matching file in `{wiki.root}sources/` (dangling collection source)
    - Collection nodes whose `items` list contains URLs with no matching `[[source_id]]` in their `sources` array (un-ingested items) — surface as: "[[<collection_id>]] has un-ingested items. Want to run a collection ingest?"
    - Collection nodes with an empty `concepts` array (not yet linked to curriculum)
+   - For each custom type in the registry: scan `{wiki.root}{collection}/` for (a) files missing any required field from the schema, (b) files with no content in any of the `content.sections` (stubs), and (c) files whose `id` frontmatter doesn't match their filename (orphans) — report using the same numbered checklist format
 
 ### Report
 
@@ -573,13 +641,14 @@ The schema is the single source of truth for structure and examples.
 
 After writing **any** node file, if `obsidian.enabled` is `true`:
 
-1. Determine the node's `collection` value (e.g. `concept`, `tool`, `source`).
+1. Determine the node's `collection` value from the known-types registry (covers both built-in and custom types).
 2. Check if `{wiki.root}bases/<collection>.base` exists.
-3. If it **does not exist**: read `assets/bases/<collection>.base.json` and write its contents to `{wiki.root}bases/<collection>.base`. Never overwrite an existing `.base` file.
+3. If it **does not exist**:
+   - For **built-in types**: read `assets/bases/<collection>.base.json` and write its contents to `{wiki.root}bases/<collection>.base`.
+   - For **custom types**: generate a base file dynamically — use the schema's `fields` keys as table columns and the first field after `id` as the `groupBy` for the board view (omit the board view if no such field exists). Write to `{wiki.root}bases/<collection>.base`.
+4. Never overwrite an existing `.base` file.
 
-The `bases/` directory is created automatically on first write if it doesn't exist.
-
-Each collection has its own template in `assets/bases/` (e.g. `assets/bases/concepts.base.json`). The filename maps directly: `<collection>.base.json` → `{wiki.root}bases/<collection>.base`.
+The `bases/` directory is created automatically on first write if it doesn't exist. The registry drives this — do not enumerate collection names.
 
 ## Diagrams
 

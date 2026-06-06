@@ -9,6 +9,10 @@ wiki:
   #   index.md, concepts/, sources/, authors/, tools/, workflows/, .state/
   root: wiki/
 
+  # Optional: folder for user-defined node type schemas, relative to wiki.root.
+  # Defaults to .schemas/ — create this folder and add JSON schema files to define custom node types.
+  # additional_schemas: .schemas/
+
 audience:
   # Who this content is written for — shapes explanation depth and assumed knowledge
   role: "<Your Audience Role>"   # e.g. "software engineer", "data scientist", "student", "product manager"
