@@ -9,13 +9,19 @@
       "id": "table",
       "type": "table",
       "name": "Sources — All",
-      "columns": ["title", "type", "author", "date_ingested"]
+      "columns": ["title", "type", "author", "date_ingested", "publication_date"]
     },
     {
-      "id": "board",
+      "id": "board-type",
       "type": "board",
       "name": "Sources — By Type",
       "groupBy": "type"
+    },
+    {
+      "id": "board-author",
+      "type": "board",
+      "name": "Sources — By Author",
+      "groupBy": "author"
     }
   ]
 }

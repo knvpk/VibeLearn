@@ -9,7 +9,13 @@
       "id": "table",
       "type": "table",
       "name": "Languages — All",
-      "columns": ["name", "execution"]
+      "columns": ["name", "execution", "case_sensitive", "indentation"]
+    },
+    {
+      "id": "board-execution",
+      "type": "board",
+      "name": "Languages — By Execution Model",
+      "groupBy": "execution"
     }
   ]
 }

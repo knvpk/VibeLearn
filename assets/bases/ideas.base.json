@@ -9,13 +9,31 @@
       "id": "table",
       "type": "table",
       "name": "Ideas — All",
-      "columns": ["title", "status", "priority"]
+      "columns": ["title", "status", "priority", "category", "effort"]
     },
     {
-      "id": "board",
+      "id": "board-status",
       "type": "board",
       "name": "Ideas — By Status",
       "groupBy": "status"
+    },
+    {
+      "id": "board-priority",
+      "type": "board",
+      "name": "Ideas — By Priority",
+      "groupBy": "priority"
+    },
+    {
+      "id": "board-category",
+      "type": "board",
+      "name": "Ideas — By Category",
+      "groupBy": "category"
+    },
+    {
+      "id": "board-effort",
+      "type": "board",
+      "name": "Ideas — By Effort",
+      "groupBy": "effort"
     }
   ]
 }
