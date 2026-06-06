@@ -1,0 +1,15 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "language" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Languages — All",
+      "columns": ["name", "execution"]
+    }
+  ]
+}

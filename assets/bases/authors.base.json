@@ -1,0 +1,15 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "author" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Authors — All",
+      "columns": ["name", "company", "verdict"]
+    }
+  ]
+}

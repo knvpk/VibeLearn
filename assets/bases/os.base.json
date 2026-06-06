@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "os" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "OSes — All",
+      "columns": ["name", "family", "form_factor"]
+    },
+    {
+      "id": "board",
+      "type": "board",
+      "name": "OSes — By Family",
+      "groupBy": "family"
+    }
+  ]
+}

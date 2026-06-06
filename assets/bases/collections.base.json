@@ -1,0 +1,15 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "collection" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Collections — All",
+      "columns": ["title", "catalog_type", "date_ingested"]
+    }
+  ]
+}

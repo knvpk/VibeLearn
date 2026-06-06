@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "idea" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Ideas — All",
+      "columns": ["title", "status", "priority"]
+    },
+    {
+      "id": "board",
+      "type": "board",
+      "name": "Ideas — By Status",
+      "groupBy": "status"
+    }
+  ]
+}

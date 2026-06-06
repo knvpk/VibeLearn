@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "tool" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Tools — All",
+      "columns": ["name", "category", "maturity", "docker"]
+    },
+    {
+      "id": "board",
+      "type": "board",
+      "name": "Tools — By Category",
+      "groupBy": "category"
+    }
+  ]
+}

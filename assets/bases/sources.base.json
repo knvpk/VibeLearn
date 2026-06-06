@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "source" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Sources — All",
+      "columns": ["title", "type", "author", "date_ingested"]
+    },
+    {
+      "id": "board",
+      "type": "board",
+      "name": "Sources — By Type",
+      "groupBy": "type"
+    }
+  ]
+}

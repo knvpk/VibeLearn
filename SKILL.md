@@ -524,7 +524,7 @@ When the user says yes (by number, range, or "all"), apply fixes by category:
 
 After applying fixes, print a delta: "Fixed N of M issues. K remaining require manual action."
 
-**Obsidian Bases check** — if `obsidian.enabled` is `true`: for every `collection` value in the collection map, check if `{wiki.root}bases/<collection>.base` exists. Write any missing `.base` files using the specs in `references/obsidian_bases.md`. Report: "Created N Obsidian base file(s): [list]" — or nothing if all already exist.
+**Obsidian Bases check** — if `obsidian.enabled` is `true`: for every `collection` value in the collection map, check if `{wiki.root}bases/<collection>.base` exists. For any missing file, read `assets/bases/<collection>.base.json` and write it. Report: "Created N Obsidian base file(s): [list]" — or nothing if all already exist.
 
 Append to `{wiki.root}.state/_log.json`:
 ```json
@@ -570,11 +570,11 @@ After writing **any** node file, if `obsidian.enabled` is `true`:
 
 1. Determine the node's `collection` value (e.g. `concept`, `tool`, `source`).
 2. Check if `{wiki.root}bases/<collection>.base` exists.
-3. If it **does not exist**: create it using the JSON spec in `references/obsidian_bases.md` for that collection. Never overwrite an existing `.base` file.
+3. If it **does not exist**: read `assets/bases/<collection>.base.json` and write its contents to `{wiki.root}bases/<collection>.base`. Never overwrite an existing `.base` file.
 
 The `bases/` directory is created automatically on first write if it doesn't exist.
 
-For the exact JSON to write per collection (table columns, board groupBy), see [`references/obsidian_bases.md`](references/obsidian_bases.md).
+Each collection has its own template in `assets/bases/` (e.g. `assets/bases/concepts.base.json`). The filename maps directly: `<collection>.base.json` → `{wiki.root}bases/<collection>.base`.
 
 ## Diagrams
 
