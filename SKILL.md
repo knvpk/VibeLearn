@@ -68,6 +68,7 @@ Do not add any preamble or follow-up — output the block above, then stop.
 - `ingest.*` — ingestion controls: `max_concepts_before_ask`, `auto_propose_author`, `detect_workflows`
 - `output.*` — output preferences: `diagram_format`
 - `examples.*` — language, framework, and idiomatic patterns for code examples
+- `obsidian.enabled` — whether to generate Obsidian Bases files; treat a missing key as `false`
 
 Schema paths are hardcoded — never read from config:
 `schemas/concept.json`, `schemas/source.json`, `schemas/author.json`, `schemas/tool.json`, `schemas/workflow.json`, `schemas/term.json`, `schemas/idea.json`, `schemas/collection.json`, `schemas/language.json`, `schemas/company.json`, `schemas/os.json`
@@ -523,6 +524,8 @@ When the user says yes (by number, range, or "all"), apply fixes by category:
 
 After applying fixes, print a delta: "Fixed N of M issues. K remaining require manual action."
 
+**Obsidian Bases check** — if `obsidian.enabled` is `true`: for every `collection` value in the collection map, check if `{wiki.root}bases/<collection>.base` exists. For any missing file, read `assets/bases/<collection>.base.json` and write it. Report: "Created N Obsidian base file(s): [list]" — or nothing if all already exist.
+
 Append to `{wiki.root}.state/_log.json`:
 ```json
 { "date": "<ISO date>", "operation": "lint", "issues_found": 8, "schema_issues": 3, "graph_issues": 5, "issues_fixed": 5 }
@@ -560,6 +563,18 @@ The schema is the single source of truth for structure and examples.
 **Term**: Frontmatter-only file — no body sections. Never duplicate — check `{wiki.root}index.md` under `## Terms` before creating.
 
 **Language**: `execution` must be set from authoritative knowledge, not inferred from context. `package_managers` and `bundlers` list the ecosystem's dominant tools in order of prevalence — only record entries the user confirms or that are unambiguous facts. `versions` lists notable supported versions, most recent last; do not guess — only record what the user supplies or what is publicly documented.
+
+## Obsidian Bases
+
+After writing **any** node file, if `obsidian.enabled` is `true`:
+
+1. Determine the node's `collection` value (e.g. `concept`, `tool`, `source`).
+2. Check if `{wiki.root}bases/<collection>.base` exists.
+3. If it **does not exist**: read `assets/bases/<collection>.base.json` and write its contents to `{wiki.root}bases/<collection>.base`. Never overwrite an existing `.base` file.
+
+The `bases/` directory is created automatically on first write if it doesn't exist.
+
+Each collection has its own template in `assets/bases/` (e.g. `assets/bases/concepts.base.json`). The filename maps directly: `<collection>.base.json` → `{wiki.root}bases/<collection>.base`.
 
 ## Diagrams
 

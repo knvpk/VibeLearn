@@ -1,0 +1,27 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "workflow" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Workflows — All",
+      "columns": ["name", "status", "difficulty", "estimated_time"]
+    },
+    {
+      "id": "board-status",
+      "type": "board",
+      "name": "Workflows — By Status",
+      "groupBy": "status"
+    },
+    {
+      "id": "board-difficulty",
+      "type": "board",
+      "name": "Workflows — By Difficulty",
+      "groupBy": "difficulty"
+    }
+  ]
+}

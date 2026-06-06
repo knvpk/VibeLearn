@@ -1,0 +1,15 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "term" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Terms — All",
+      "columns": ["name", "tags"]
+    }
+  ]
+}

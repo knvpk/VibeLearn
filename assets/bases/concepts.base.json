@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "concept" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Concepts — All",
+      "columns": ["name", "difficulty", "tags"]
+    },
+    {
+      "id": "board",
+      "type": "board",
+      "name": "Concepts — By Difficulty",
+      "groupBy": "difficulty"
+    }
+  ]
+}

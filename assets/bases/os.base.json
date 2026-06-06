@@ -1,0 +1,33 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "os" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "OSes — All",
+      "columns": ["name", "family", "form_factor", "arch", "eol", "lts"]
+    },
+    {
+      "id": "board-family",
+      "type": "board",
+      "name": "OSes — By Family",
+      "groupBy": "family"
+    },
+    {
+      "id": "board-form-factor",
+      "type": "board",
+      "name": "OSes — By Form Factor",
+      "groupBy": "form_factor"
+    },
+    {
+      "id": "board-lts",
+      "type": "board",
+      "name": "OSes — LTS",
+      "groupBy": "lts"
+    }
+  ]
+}

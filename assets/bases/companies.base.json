@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "company" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Companies — All",
+      "columns": ["name", "founded", "verdict"]
+    },
+    {
+      "id": "board-verdict",
+      "type": "board",
+      "name": "Companies — By Verdict",
+      "groupBy": "verdict"
+    }
+  ]
+}

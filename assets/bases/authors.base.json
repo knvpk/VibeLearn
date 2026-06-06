@@ -1,0 +1,27 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "author" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Authors — All",
+      "columns": ["name", "company", "verdict", "expertise"]
+    },
+    {
+      "id": "board-verdict",
+      "type": "board",
+      "name": "Authors — By Verdict",
+      "groupBy": "verdict"
+    },
+    {
+      "id": "board-company",
+      "type": "board",
+      "name": "Authors — By Company",
+      "groupBy": "company"
+    }
+  ]
+}

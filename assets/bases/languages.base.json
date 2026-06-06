@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "conditions": [
+      { "field": "collection", "operator": "equals", "value": "language" }
+    ]
+  },
+  "views": [
+    {
+      "id": "table",
+      "type": "table",
+      "name": "Languages — All",
+      "columns": ["name", "execution", "case_sensitive", "indentation"]
+    },
+    {
+      "id": "board-execution",
+      "type": "board",
+      "name": "Languages — By Execution Model",
+      "groupBy": "execution"
+    }
+  ]
+}
