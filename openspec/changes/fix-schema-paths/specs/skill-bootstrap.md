@@ -22,7 +22,7 @@ Claude resolves these relative to cwd (the user's project root). There is no `sc
 The startup block derives `SKILL_DIR` once:
 
 ```
-SKILL_DIR = .claude/skills/vibe_learn
+SKILL_DIR = .agents/skills/vibe_learn
 ```
 
 All 27 schema path references are updated to `{SKILL_DIR}/assets/schemas/<type>.json`.
@@ -36,6 +36,6 @@ and halt.
 ## Constraints
 
 - `SKILL_DIR` is a fixed string constant in the skill text — it is NOT derived at runtime from the filesystem. The value is always `.claude/skills/vibe_learn`.
-- The path uses `.claude/skills/vibe_learn` (the symlink), not `.agents/skills/vibe_learn` (the real location), because `.claude/` is the stable, agent-agnostic reference point.
+- The path uses `.agents/skills/vibe_learn` — the real install location written by `npx skills`.
 - No other files change.
 - The 27 replacements are purely textual — no logic changes.

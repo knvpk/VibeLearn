@@ -2,7 +2,7 @@
 
 - [ ] 1.1 In `SKILL.md`, locate the startup block (where config is read and state files are derived). Add immediately after the first `##` heading or before the first file-read instruction:
   ```
-  SKILL_DIR = .claude/skills/vibe_learn
+  SKILL_DIR = .agents/skills/vibe_learn
   ```
 - [ ] 1.2 Add a guard below the constant: if `{SKILL_DIR}/assets/schemas/concept.json` is not readable, print `Schema files not found at {SKILL_DIR}/assets/schemas/. Re-install with: npx skills add knvpk/VibeLearn` and stop.
 
